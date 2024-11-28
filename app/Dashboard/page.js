@@ -31,12 +31,11 @@ export default function TourForm() {
     const files = Array.from(e.target.files);
     const processedFiles = files.map((file, index) => ({
       file,
-      status: index === 0 ? 1 : 2, // ใช้ 1 สำหรับไฟล์แรก, 2 สำหรับไฟล์ถัดไป
+      status: index === 0 ? 1 : 2, 
       preview: URL.createObjectURL(file),
     }));
-    // console.log("Processed Files:", processedFiles);
 
-    setImageFiles(processedFiles); // เก็บไฟล์ที่อัปโหลดใน state
+    setImageFiles(processedFiles);
   };
 
   const validateForm = () => {
@@ -52,47 +51,43 @@ export default function TourForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) { // ตรวจสอบความถูกต้องของฟอร์ม
-      const formDataToSend = new FormData();
+    if (validateForm()) {
+        const formDataToSend = new FormData();
 
-      // เพิ่มข้อมูลข้อความจาก formData
-      Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
-      });
-
-      // เพิ่มข้อมูลไฟล์และสถานะของแต่ละไฟล์
-      imageFiles.forEach((imageFile, index) => {
-        formDataToSend.append(`images[${index}]`, imageFile.file); // เพิ่มไฟล์
-        formDataToSend.append(`images[${index}][status]`, imageFile.status); // เพิ่มสถานะไฟล์
-      });
-
-      try {
-        const response = await fetch("/api/tours", {
-          method: "POST",
-          body: formDataToSend,
+        Object.keys(formData).forEach((key) => {
+            formDataToSend.append(key, formData[key]);
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Tour created successfully:", data);
+        imageFiles.forEach((imageFile, index) => {
+            formDataToSend.append(`images[${index}]`, imageFile.file); // ใช้รูปแบบ key images[index]
+            formDataToSend.append(`image_status_${index}`, imageFile.status); // ส่ง status ด้วย
+        });
 
-          // Reset form after successful submission
-          setFormData({
-            tour_section_name: "",
-            tour_name: "",
-            tour_detail: "",
-            tour_highlights_detail: "",
-          });
-          setImageFiles([]); // เคลียร์ไฟล์ที่อัปโหลด
-        } else {
-          console.error("Failed to create tour:", response.statusText);
+        try {
+            const response = await fetch("/api/tours", {
+                method: "POST",
+                body: formDataToSend,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Tour created successfully:", data);
+
+                setFormData({
+                    tour_section_name: "",
+                    tour_name: "",
+                    tour_detail: "",
+                    tour_highlights_detail: "",
+                });
+                setImageFiles([]);
+            } else {
+                console.error("Failed to create tour:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
         }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-      }
     }
-  };
-
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-6">
