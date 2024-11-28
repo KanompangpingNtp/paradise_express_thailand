@@ -14,8 +14,21 @@
   }
 }
 
+/* ฟอนต์ Regular */
+@font-face {
+  font-family: 'Montserrat-Regular';
+  src: url('/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Montserrat-Regular', sans-serif;
+}
+
+/* ใช้ฟอนต์ Regular สำหรับข้อความที่ต้องการ */
+.font-montserrat {
+  font-family: 'Montserrat-Regular', sans-serif;
 }
