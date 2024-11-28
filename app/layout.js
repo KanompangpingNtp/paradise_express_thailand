@@ -1,5 +1,5 @@
-import localFont from "next/font/local";
 import "./globals.css";
+import localFont from "next/font/local";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 

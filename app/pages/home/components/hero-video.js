@@ -16,16 +16,14 @@ function Herovideo() {
       playerRef.current = new window.YT.Player("youtube-player", {
         videoId: "p2u9JBK4Zu0", // ใส่ VIDEO_ID
         playerVars: {
-          autoplay: 1, // เล่นอัตโนมัติ
-          mute: 1, // เริ่มต้นปิดเสียง
           loop: 1, // เปิดการเล่นซ้ำ
           playlist: "p2u9JBK4Zu0", // ตั้งค่าให้ videoId ซ้ำใน playlist เพื่อให้ loop ทำงาน
         },
         events: {
           onReady: (event) => {
             console.log("Video is ready");
-            // เริ่มเล่นทันทีเมื่อพร้อม
-            event.target.playVideo(); // เล่นวิดีโอเมื่อโหลดเสร็จ
+            // ไม่เริ่มเล่นทันทีเมื่อพร้อม
+            // event.target.playVideo(); // ไม่เรียก playVideo() ในตอนนี้
           },
           onStateChange: (event) => {
             console.log("Player state changed:", event.data);
@@ -38,20 +36,9 @@ function Herovideo() {
       });
     };
 
-    // เพิ่ม event listener เมื่อผู้ใช้คลิกเพื่อ unmute
-    const handleUserInteraction = () => {
-      if (playerRef.current) {
-        playerRef.current.unMute(); // เปิดเสียงเมื่อผู้ใช้คลิก
-        console.log("Unmuted video");
-      }
-    };
-
-    // เพิ่ม event listener เพื่อให้เปิดเสียงเมื่อผู้ใช้คลิก
-    document.body.addEventListener("click", handleUserInteraction);
-
     // ลบ event listener เมื่อคอมโพเนนต์ถูกทำลาย
     return () => {
-      document.body.removeEventListener("click", handleUserInteraction);
+      // ไม่ต้องทำอะไรเพิ่มเติมในกรณีนี้
     };
   }, []);
 
