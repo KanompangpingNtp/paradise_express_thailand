@@ -1,19 +1,19 @@
-"use client"
-import React, { useState } from 'react';
-import Image from 'next/image';
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
 import {
   CameraIcon,
   MapPinIcon,
   StarIcon,
-  CloudArrowUpIcon
-} from '@heroicons/react/24/solid';
+  CloudArrowUpIcon,
+} from "@heroicons/react/24/solid";
 
 export default function TourForm() {
   const [formData, setFormData] = useState({
-    tour_section_name: '',
-    tour_name: '',
-    tour_detail: '',
-    tour_highlights_detail: ''
+    tour_section_name: "",
+    tour_name: "",
+    tour_detail: "",
+    tour_highlights_detail: "",
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -21,9 +21,9 @@ export default function TourForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -32,31 +32,61 @@ export default function TourForm() {
     const processedFiles = files.map((file, index) => ({
       file,
       status: index === 0 ? 1 : 2,
-      preview: URL.createObjectURL(file)
+      preview: URL.createObjectURL(file),
     }));
     setImageFiles(processedFiles);
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.tour_section_name) newErrors.tour_section_name = 'กรุณาระบุหัวข้อทัวร์';
-    if (!formData.tour_name) newErrors.tour_name = 'กรุณาระบุชื่อทัวร์';
-    if (!formData.tour_detail) newErrors.tour_detail = 'กรุณาระบุรายละเอียดทัวร์';
+    if (!formData.tour_section_name) newErrors.tour_section_name = "กรุณาระบุหัวข้อทัวร์";
+    if (!formData.tour_name) newErrors.tour_name = "กรุณาระบุชื่อทัวร์";
+    if (!formData.tour_detail) newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      const submissionData = {
-        ...formData,
-        tour_image_files: imageFiles
-      };
-      console.log(submissionData);
-      // Add your submission logic here
+      const formDataToSend = new FormData();
+
+      // เพิ่มข้อมูลข้อความ
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+      });
+
+      // เพิ่มข้อมูลไฟล์และสถานะ
+      imageFiles.forEach((imageFile, index) => {
+        formDataToSend.append(`images[${index}][file]`, imageFile.file);
+        formDataToSend.append(`images[${index}][status]`, imageFile.status);
+      });
+
+      try {
+        const response = await fetch("/api/tours", {
+          method: "POST",
+          body: formDataToSend,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Tour created successfully:", data);
+          // Reset form after successful submission
+          setFormData({
+            tour_section_name: "",
+            tour_name: "",
+            tour_detail: "",
+            tour_highlights_detail: "",
+          });
+          setImageFiles([]);
+        } else {
+          console.error("Failed to create tour:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
     }
   };
 
@@ -83,7 +113,9 @@ export default function TourForm() {
               placeholder="ระบุหัวข้อทัวร์"
               value={formData.tour_section_name}
               onChange={handleInputChange}
-              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_section_name ? 'border-red-500' : ''}`}
+              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                errors.tour_section_name ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_section_name && (
               <span className="text-red-500 text-sm mt-1">{errors.tour_section_name}</span>
@@ -102,7 +134,9 @@ export default function TourForm() {
               placeholder="ระบุชื่อทัวร์"
               value={formData.tour_name}
               onChange={handleInputChange}
-              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_name ? 'border-red-500' : ''}`}
+              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                errors.tour_name ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_name && (
               <span className="text-red-500 text-sm mt-1">{errors.tour_name}</span>
@@ -120,7 +154,9 @@ export default function TourForm() {
               placeholder="ระบุรายละเอียดทัวร์"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_detail ? 'border-red-500' : ''}`}
+              className={`textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                errors.tour_detail ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_detail && (
               <span className="text-red-500 text-sm mt-1">{errors.tour_detail}</span>
@@ -148,15 +184,13 @@ export default function TourForm() {
               <CloudArrowUpIcon className="w-5 h-5 text-blue-600" />
               <span className="label-text font-semibold text-gray-700">แนบไฟล์รูป</span>
             </label>
-            <div className="flex items-center gap-4">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                className="file-input file-input-bordered w-full"
-                onChange={handleImageUpload}
-              />
-            </div>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="file-input file-input-bordered w-full"
+              onChange={handleImageUpload}
+            />
 
             {/* Image Preview */}
             {imageFiles.length > 0 && (
