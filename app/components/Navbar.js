@@ -2,29 +2,31 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link"; // ใช้ Link จาก Next.js
 
-// ตัวแปรเก็บ styles ไว้แยก
 const styles = {
   nav: {
     base: "fixed top-0 left-0 w-full bg-black text-white transition-transform duration-300 opacity-90 z-50",
     hidden: "-translate-y-full",
     visible: "translate-y-0",
   },
-  container: "container mx-auto flex justify-center items-center h-14 text-xl",
-  logo: "text-lg font-bold",
-  menu: "flex gap-6 ml-8",
-  link: "transition-colors duration-300 mx-4", // คลาสพื้นฐานสำหรับลิงก์
-  linkHover: "hover:text-orange-400", // สีที่ใช้เมื่อ hover
-  linkActive: "text-orange-400", // สีสำหรับหน้าปัจจุบัน
+  container: "container mx-auto px-4 flex justify-between items-center h-14 text-xl",
+  logo: "text-lg font-bold cursor-pointer",
+  menuWrapper: "flex gap-6 justify-center flex-grow", // เมนูจะขยายให้เต็มพื้นที่
+  menu: "flex gap-6",
+  link: "transition-colors duration-300 mx-4",
+  linkHover: "hover:text-orange-400",
+  linkActive: "text-orange-400",
+  loginLink: "ml-auto", // ทำให้ login อยู่ขวาสุด
 };
 
-// ตัวแปรเก็บข้อมูลเมนู
 const menuItems = [
-  { href: "/", label: "Home" },
   { href: "/pages/tour-packages", label: "Tour Packages" },
+  { href: "/pages/sightseeing", label: "Sightseeing" },
   { href: "/pages/transfer", label: "Transfer" },
-  { href: "/", label: "Contact" },
-  { href: "/pages/login", label: "Login" },
+  { href: "/pages/customized", label: "Customized" },
+  { href: "#footer", label: "Contact" }, // ใช้ href เป็น #footer สำหรับการเลื่อนไปที่ footer
+  { href: "/pages/login", label: "Login", isLogin: true },
 ];
 
 const Navbar = () => {
@@ -33,9 +35,9 @@ const Navbar = () => {
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > lastScrollY) {
-      setShow(false); // ซ่อนเมื่อเลื่อนลง
+      setShow(false);
     } else {
-      setShow(true); // แสดงเมื่อเลื่อนขึ้น
+      setShow(true);
     }
     setLastScrollY(window.scrollY);
   }, [lastScrollY]);
@@ -47,38 +49,61 @@ const Navbar = () => {
     };
   }, [handleScroll]);
 
-  // ตรวจสอบเส้นทางปัจจุบันโดยใช้ window.location.pathname
   const currentPath = window.location.pathname;
 
+  // ฟังก์ชันเพื่อเลื่อนไปที่ footer
+  const handleContactClick = () => {
+    const footer = document.getElementById("footer");
+    footer.scrollIntoView({ behavior: "smooth" }); // เลื่อนด้วย behavior smooth
+  };
+
   return (
-    <nav
-      className={`${styles.nav.base} ${show ? styles.nav.visible : styles.nav.hidden}`}
-    >
+    <nav className={`${styles.nav.base} ${show ? styles.nav.visible : styles.nav.hidden}`}>
       <div className={styles.container}>
-        {/* โลโก้ */}
+        {/* Logo อยู่ซ้ายสุด */}
         <div className={styles.logo}>
-          <Image
-            src="/images/logo_edited.avif" // ระบุ path ของไฟล์โลโก้ใน public
-            alt="Logo"
-            width={47} // กำหนดความกว้าง
-            height={47} // กำหนดความสูง
-            priority // เพิ่ม priority ให้โลโก้โหลดก่อน
-          />
+          <Link href="/">
+            <Image
+              src="/images/logo_edited.avif"
+              alt="Logo"
+              width={47}
+              height={47}
+              priority
+            />
+          </Link>
         </div>
 
-        {/* เมนู */}
+        {/* เมนูหลักจะขยายเต็มพื้นที่ */}
+        <div className={styles.menuWrapper}>
+          <ul className={styles.menu}>
+            {menuItems.map((item, index) => (
+              !item.isLogin && (
+                <li key={index}>
+                  <Link
+                    href={item.href}
+                    className={`${styles.link} ${currentPath === item.href ? styles.linkActive : styles.linkHover}`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              )
+            ))}
+          </ul>
+        </div>
+
+        {/* ลิงก์ login อยู่ขวาสุด */}
         <ul className={styles.menu}>
           {menuItems.map((item, index) => (
-            <li key={index}>
-              <a
-                href={item.href}
-                className={`${styles.link} ${
-                  currentPath === item.href ? styles.linkActive : styles.linkHover
-                }`} // เปลี่ยนสีเมื่อเส้นทางตรงกับ href
-              >
-                {item.label}
-              </a>
-            </li>
+            item.isLogin && (
+              <li key={index} className={styles.loginLink}>
+                <Link
+                  href={item.href}
+                  className={`${styles.link} ${currentPath === item.href ? styles.linkActive : styles.linkHover}`}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            )
           ))}
         </ul>
       </div>

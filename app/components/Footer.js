@@ -1,18 +1,28 @@
 // components/Footer.js
 export default function Footer() {
   return (
-    <footer
-      className="w-auto h-auto p-20"
-      style={{ backgroundImage: "url(/images/footer.jpg)" }}
-    >
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 border-2">
+    <footer>
+      <div
+        className="w-[118.9rem] h-[67rem]"
+        style={{ backgroundImage: "url(/images/yuk.jpg)" }}
+      >
+      </div>
+      <div id="footer"
+        className="w-auto h-auto p-10"
+        style={{ backgroundImage: "url(/images/footer.jpg)" }}
+      >
+        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* logo ด้านซ้าย */}
-        <div>
-
+        <div className="flex justify-center md:justify-center items-center">
+          <img
+            src="/images/logo_edited.avif" // ใส่พาธของรูปโลโก้ที่ต้องการ
+            alt="Logo"
+            className="w-[15rem] h-auto" // ปรับขนาดของโลโก้ตามที่ต้องการ
+          />
         </div>
         {/* กลาง */}
-        <div>
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+        <div className="py-5">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4 ">
             Paradise Express
           </h3>
           <p className="text-gray-600 mb-4">
@@ -32,37 +42,28 @@ export default function Footer() {
             <br />
             <strong>WhatsApp:</strong> 098-459-6582
           </p>
+          <h4 className="text-xl font-semibold text-gray-800 mt-8">About Us</h4>
         </div>
 
         {/* ด้านขวา */}
-        <div className="text-center md:text-left">
-          <h4 className="text-xl font-semibold text-gray-800 mb-4">
-            Follow Us
-          </h4>
-          <div className="flex justify-center md:justify-start gap-4 mb-4">
-            <a
-              href="https://web.facebook.com/paradiseexpress56/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="/facebook-qr-code.png"
-                alt="Facebook QR Code"
-                className="w-24"
-              />
-            </a>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              <img
-                src="/line-qr-code.png"
-                alt="LINE QR Code"
-                className="w-24"
-              />
-            </a>
+        <div className="flex flex-col items-center text-center md:text-left">
+          <div className="flex flex-col items-center justify-center gap-4 mb-4">
+            <img
+              src="/images/QR_Fb-removebg-preview.png"
+              alt="Facebook QR Code"
+              className="w-[10rem]"
+            />
+            <p className="text-gray-600 text-sm mb-2">
+              FB : https://web.facebook.com/paradiseexpress56/
+            </p>
+            <img src="/images/46.jpg" alt="LINE QR Code" className="w-[7rem]" />
           </div>
           <p className="text-gray-600 mb-2">@paradiseexpress</p>
-          <p className="text-gray-400">© copy by GM Sky</p>
+          <p className="text-gray-400 text-right ml-auto">© copy by GM Sky</p>
         </div>
       </div>
+      </div>
+
     </footer>
   );
 }
