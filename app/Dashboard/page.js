@@ -31,10 +31,12 @@ export default function TourForm() {
     const files = Array.from(e.target.files);
     const processedFiles = files.map((file, index) => ({
       file,
-      status: index === 0 ? 1 : 2,
+      status: index === 0 ? 1 : 2, // ใช้ 1 สำหรับไฟล์แรก, 2 สำหรับไฟล์ถัดไป
       preview: URL.createObjectURL(file),
     }));
-    setImageFiles(processedFiles);
+    // console.log("Processed Files:", processedFiles);
+
+    setImageFiles(processedFiles); // เก็บไฟล์ที่อัปโหลดใน state
   };
 
   const validateForm = () => {
@@ -43,25 +45,25 @@ export default function TourForm() {
     if (!formData.tour_name) newErrors.tour_name = "กรุณาระบุชื่อทัวร์";
     if (!formData.tour_detail) newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(newErrors); // เก็บข้อผิดพลาดใน state
+    return Object.keys(newErrors).length === 0; // ถ้าไม่มีข้อผิดพลาด return true
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
+    if (validateForm()) { // ตรวจสอบความถูกต้องของฟอร์ม
       const formDataToSend = new FormData();
 
-      // เพิ่มข้อมูลข้อความ
+      // เพิ่มข้อมูลข้อความจาก formData
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
 
-      // เพิ่มข้อมูลไฟล์และสถานะ
+      // เพิ่มข้อมูลไฟล์และสถานะของแต่ละไฟล์
       imageFiles.forEach((imageFile, index) => {
-        formDataToSend.append(`images[${index}][file]`, imageFile.file);
-        formDataToSend.append(`images[${index}][status]`, imageFile.status);
+        formDataToSend.append(`images[${index}]`, imageFile.file); // เพิ่มไฟล์
+        formDataToSend.append(`images[${index}][status]`, imageFile.status); // เพิ่มสถานะไฟล์
       });
 
       try {
@@ -73,6 +75,7 @@ export default function TourForm() {
         if (response.ok) {
           const data = await response.json();
           console.log("Tour created successfully:", data);
+
           // Reset form after successful submission
           setFormData({
             tour_section_name: "",
@@ -80,7 +83,7 @@ export default function TourForm() {
             tour_detail: "",
             tour_highlights_detail: "",
           });
-          setImageFiles([]);
+          setImageFiles([]); // เคลียร์ไฟล์ที่อัปโหลด
         } else {
           console.error("Failed to create tour:", response.statusText);
         }
@@ -89,6 +92,7 @@ export default function TourForm() {
       }
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-6">
@@ -113,9 +117,8 @@ export default function TourForm() {
               placeholder="ระบุหัวข้อทัวร์"
               value={formData.tour_section_name}
               onChange={handleInputChange}
-              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
-                errors.tour_section_name ? "border-red-500" : ""
-              }`}
+              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_section_name ? "border-red-500" : ""
+                }`}
             />
             {errors.tour_section_name && (
               <span className="text-red-500 text-sm mt-1">{errors.tour_section_name}</span>
@@ -134,9 +137,8 @@ export default function TourForm() {
               placeholder="ระบุชื่อทัวร์"
               value={formData.tour_name}
               onChange={handleInputChange}
-              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
-                errors.tour_name ? "border-red-500" : ""
-              }`}
+              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_name ? "border-red-500" : ""
+                }`}
             />
             {errors.tour_name && (
               <span className="text-red-500 text-sm mt-1">{errors.tour_name}</span>
@@ -154,9 +156,8 @@ export default function TourForm() {
               placeholder="ระบุรายละเอียดทัวร์"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
-                errors.tour_detail ? "border-red-500" : ""
-              }`}
+              className={`textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_detail ? "border-red-500" : ""
+                }`}
             />
             {errors.tour_detail && (
               <span className="text-red-500 text-sm mt-1">{errors.tour_detail}</span>
@@ -189,6 +190,7 @@ export default function TourForm() {
               multiple
               accept="image/*"
               className="file-input file-input-bordered w-full"
+              name="images"  // กำหนดชื่อฟิลด์ให้ตรงกับที่ฝั่ง backend ใช้
               onChange={handleImageUpload}
             />
 
