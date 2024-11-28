@@ -1,7 +1,7 @@
 // components/Footer.js
 export default function Footer() {
   return (
-    <footer>
+    <footer className="hidden">
       <div
         className="w-[118.9rem] h-[67rem]"
         style={{ backgroundImage: "url(/images/yuk.jpg)" }}
