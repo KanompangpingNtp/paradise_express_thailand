@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@prisma/client": "^5.22.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.11.4",
     "next": "15.0.3",
+    "next-connect": "^1.0.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106"
   },
@@ -19,6 +23,7 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
+    "prisma": "^5.22.0",
     "tailwindcss": "^3.4.1"
   }
 }
