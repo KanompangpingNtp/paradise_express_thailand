@@ -113,11 +113,11 @@ export default function TourSightseeing() {
 
   return (
     <div>
-      <div className="container mx-auto px-8 pb-10">
-        <div className="text-black text-4xl font-bold text-center py-10">
+      <div className="container mx-auto px-2 sm:px-8 pb-10">
+        <div className="text-black text-2xl sm:text-4xl font-bold text-center py-10">
           SIGHTSEEING TOUR
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-3 sm:gap-8">
           {/* ใช้ slice เพื่อจำกัดให้แสดงแค่ 8 card */}
           {cardData.slice(0, 8).map((card, index) => (
             <div
@@ -177,14 +177,14 @@ export default function TourSightseeing() {
           ))}
         </div>
 
-        <div className="flex justify-end items-center text-black mt-4">
-          <a
-            href="#"
-            className="bg-gray-700 text-white py-3 px-5 hover:text-orange-500 hover:bg-gray-900 duration-200 me-2 rounded-2xl "
-          >
-            VIEW ALL
-          </a>
-        </div>
+        <div className="flex justify-center w-full text-center sm:justify-end items-center text-black mt-4">
+        <a
+          href="#"
+          className="bg-gray-700 text-white py-3 px-5 w-full 2xl:w-40 hover:text-orange-500 hover:bg-gray-900 duration-200  rounded-2xl "
+        >
+          VIEW ALL
+        </a>
+      </div>
       </div>
     </div>
   );
