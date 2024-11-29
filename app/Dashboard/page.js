@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import MultiDestinationInput from "./components/Multi-Destination -Input";
 import {
   CameraIcon,
   MapPinIcon,
@@ -13,7 +14,7 @@ export default function TourForm() {
     tour_section_name: "",
     tour_name: "",
     tour_detail: "",
-    tour_highlights_detail: "",
+    tour_highlights_detail: [],
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -34,7 +35,6 @@ export default function TourForm() {
       status: index === 0 ? 1 : 2,
       preview: URL.createObjectURL(file),
     }));
-
     setImageFiles(processedFiles);
   };
 
@@ -57,12 +57,18 @@ export default function TourForm() {
       const formDataToSend = new FormData();
 
       Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
+        if (Array.isArray(formData[key])) {
+          formData[key].forEach((item, index) => {
+            formDataToSend.append(`${key}[${index}]`, item);
+          });
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
       });
 
       imageFiles.forEach((imageFile, index) => {
-        formDataToSend.append(`images[${index}]`, imageFile.file); // ใช้รูปแบบ key images[index]
-        formDataToSend.append(`image_status_${index}`, imageFile.status); // ส่ง status ด้วย
+        formDataToSend.append(`images[${index}]`, imageFile.file);
+        formDataToSend.append(`image_status_${index}`, imageFile.status);
       });
 
       try {
@@ -79,7 +85,7 @@ export default function TourForm() {
             tour_section_name: "",
             tour_name: "",
             tour_detail: "",
-            tour_highlights_detail: "",
+            tour_highlights_detail: [],
           });
           setImageFiles([]);
         } else {
@@ -102,7 +108,6 @@ export default function TourForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          {/* Tour Section Name */}
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <CameraIcon className="w-5 h-5 text-blue-600" />
@@ -126,7 +131,6 @@ export default function TourForm() {
               <option value="cultural">การท่องเที่ยวเชิงวัฒนธรรม</option>
               <option value="nature">ธรรมชาติ</option>
             </select>
-
             {errors.tour_section_name && (
               <span className="text-red-500 text-sm mt-1">
                 {errors.tour_section_name}
@@ -134,7 +138,6 @@ export default function TourForm() {
             )}
           </div>
 
-          {/* Tour Name */}
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <MapPinIcon className="w-5 h-5 text-blue-600" />
@@ -159,7 +162,6 @@ export default function TourForm() {
             )}
           </div>
 
-          {/* Tour Details */}
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <StarIcon className="w-5 h-5 text-blue-600" />
@@ -183,24 +185,18 @@ export default function TourForm() {
             )}
           </div>
 
-          {/* Tour Highlights */}
-          <div className="form-control">
-            <label className="label flex items-center gap-2">
-              <StarIcon className="w-5 h-5 text-blue-600" />
-              <span className="label-text font-semibold text-gray-700">
-                ไฮไลท์ทัวร์
-              </span>
-            </label>
-            <textarea
-              name="tour_highlights_detail"
-              placeholder="ระบุไฮไลท์ทัวร์"
-              value={formData.tour_highlights_detail}
-              onChange={handleInputChange}
-              className="textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+          {/* MultiDestinationInput */}
+          <MultiDestinationInput
+            onDestinationsChange={(updatedDestinations) =>
+              setFormData((prev) => ({
+                ...prev,
+                tour_highlights_detail: updatedDestinations,
+              }))
+            }
+            placeholder="เพิ่มไฮไลท์"
+            maxDestinations={5}
+          />
 
-          {/* Image Upload */}
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <CloudArrowUpIcon className="w-5 h-5 text-blue-600" />
@@ -213,11 +209,9 @@ export default function TourForm() {
               multiple
               accept="image/*"
               className="file-input file-input-bordered w-full"
-              name="images" // กำหนดชื่อฟิลด์ให้ตรงกับที่ฝั่ง backend ใช้
+              name="images"
               onChange={handleImageUpload}
             />
-
-            {/* Image Preview */}
             {imageFiles.length > 0 && (
               <div className="grid grid-cols-4 gap-4 mt-4">
                 {imageFiles.map((imageFile, index) => (
@@ -241,7 +235,6 @@ export default function TourForm() {
             )}
           </div>
 
-          {/* Submit Button */}
           <div className="form-control mt-8">
             <button
               type="submit"
