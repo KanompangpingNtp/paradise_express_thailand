@@ -40,9 +40,11 @@ export default function TourForm() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.tour_section_name) newErrors.tour_section_name = "กรุณาระบุหัวข้อทัวร์";
+    if (!formData.tour_section_name)
+      newErrors.tour_section_name = "กรุณาระบุหัวข้อทัวร์";
     if (!formData.tour_name) newErrors.tour_name = "กรุณาระบุชื่อทัวร์";
-    if (!formData.tour_detail) newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
+    if (!formData.tour_detail)
+      newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -104,19 +106,31 @@ export default function TourForm() {
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <CameraIcon className="w-5 h-5 text-blue-600" />
-              <span className="label-text font-semibold text-gray-700">หัวข้อทัวร์</span>
+              <span className="label-text font-semibold text-gray-700">
+                หัวข้อทัวร์
+              </span>
             </label>
-            <input
-              type="text"
+            <select
               name="tour_section_name"
-              placeholder="ระบุหัวข้อทัวร์"
               value={formData.tour_section_name}
               onChange={handleInputChange}
-              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_section_name ? "border-red-500" : ""
-                }`}
-            />
+              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                errors.tour_section_name ? "border-red-500" : ""
+              }`}
+            >
+              <option value="" disabled>
+                กรุณาเลือกหัวข้อทัวร์
+              </option>
+              <option value="adventure">การผจญภัย</option>
+              <option value="relaxation">การพักผ่อน</option>
+              <option value="cultural">การท่องเที่ยวเชิงวัฒนธรรม</option>
+              <option value="nature">ธรรมชาติ</option>
+            </select>
+
             {errors.tour_section_name && (
-              <span className="text-red-500 text-sm mt-1">{errors.tour_section_name}</span>
+              <span className="text-red-500 text-sm mt-1">
+                {errors.tour_section_name}
+              </span>
             )}
           </div>
 
@@ -124,7 +138,9 @@ export default function TourForm() {
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <MapPinIcon className="w-5 h-5 text-blue-600" />
-              <span className="label-text font-semibold text-gray-700">ชื่อทัวร์</span>
+              <span className="label-text font-semibold text-gray-700">
+                ชื่อทัวร์
+              </span>
             </label>
             <input
               type="text"
@@ -132,11 +148,14 @@ export default function TourForm() {
               placeholder="ระบุชื่อทัวร์"
               value={formData.tour_name}
               onChange={handleInputChange}
-              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_name ? "border-red-500" : ""
-                }`}
+              className={`input input-bordered w-full border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                errors.tour_name ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_name && (
-              <span className="text-red-500 text-sm mt-1">{errors.tour_name}</span>
+              <span className="text-red-500 text-sm mt-1">
+                {errors.tour_name}
+              </span>
             )}
           </div>
 
@@ -144,18 +163,23 @@ export default function TourForm() {
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <StarIcon className="w-5 h-5 text-blue-600" />
-              <span className="label-text font-semibold text-gray-700">รายละเอียดทัวร์</span>
+              <span className="label-text font-semibold text-gray-700">
+                รายละเอียดทัวร์
+              </span>
             </label>
             <textarea
               name="tour_detail"
               placeholder="ระบุรายละเอียดทัวร์"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${errors.tour_detail ? "border-red-500" : ""
-                }`}
+              className={`textarea textarea-bordered w-full h-32 border-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                errors.tour_detail ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_detail && (
-              <span className="text-red-500 text-sm mt-1">{errors.tour_detail}</span>
+              <span className="text-red-500 text-sm mt-1">
+                {errors.tour_detail}
+              </span>
             )}
           </div>
 
@@ -163,7 +187,9 @@ export default function TourForm() {
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <StarIcon className="w-5 h-5 text-blue-600" />
-              <span className="label-text font-semibold text-gray-700">ไฮไลท์ทัวร์</span>
+              <span className="label-text font-semibold text-gray-700">
+                ไฮไลท์ทัวร์
+              </span>
             </label>
             <textarea
               name="tour_highlights_detail"
@@ -178,14 +204,16 @@ export default function TourForm() {
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <CloudArrowUpIcon className="w-5 h-5 text-blue-600" />
-              <span className="label-text font-semibold text-gray-700">แนบไฟล์รูป</span>
+              <span className="label-text font-semibold text-gray-700">
+                แนบไฟล์รูป
+              </span>
             </label>
             <input
               type="file"
               multiple
               accept="image/*"
               className="file-input file-input-bordered w-full"
-              name="images"  // กำหนดชื่อฟิลด์ให้ตรงกับที่ฝั่ง backend ใช้
+              name="images" // กำหนดชื่อฟิลด์ให้ตรงกับที่ฝั่ง backend ใช้
               onChange={handleImageUpload}
             />
 
