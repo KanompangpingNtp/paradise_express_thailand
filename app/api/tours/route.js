@@ -32,7 +32,7 @@ export async function POST(req) {
         const images = [];
 
         for (const [key, value] of formData.entries()) {
-            if (key.startsWith("images[")) { // ตรวจสอบให้ตรงกับรูปแบบ keys จาก frontend
+            if (key.startsWith("images[")) {
                 const file = value;
                 const index = key.match(/images\[(\d+)]/)[1]; // ดึง index จาก key
                 const status = formData.get(`image_status_${index}`);
@@ -68,4 +68,3 @@ export async function POST(req) {
         );
     }
 }
-
