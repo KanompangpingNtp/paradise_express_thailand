@@ -35,27 +35,27 @@ export default function Footer() {
 
           {/* Contact Section */}
           <div className="sm:py-2 md:py-5">
-            <h3 className="sm:text-md sm:text-center md:text-left md:text-lg lg:text-2xl font-semibold text-gray-800 md:mb-2 lg:mb-4 ">
+            <h3 className="text-md text-center md:text-left md:text-lg lg:text-2xl font-semibold text-gray-800 md:mb-2 lg:mb-4 ">
               Paradise Express
             </h3>
-            <p className="sm:text-md sm:text-center md:text-left md:text-sm lg:text-lg text-gray-600 md:mb-2 lg:mb-4">
+            <p className="text-md text-center md:text-left md:text-sm lg:text-lg text-gray-600 md:mb-2 lg:mb-4">
               41/147 Moo 6, Sainoi Sub-district,
               <br />
               Sainoi District, Nonthaburi province
               <br />
               11150 THAILAND
             </p>
-            <h4 className="sm:text-md sm:text-center md:text-left text-lg lg:text-2xl font-semibold text-gray-800 md:mb-1 lg:mb-2">
+            <h4 className="text-md text-center md:text-left text-lg lg:text-2xl font-semibold text-gray-800 md:mb-1 lg:mb-2">
               Contact Us
             </h4>
-            <p className="sm:text-md sm:text-center md:text-left md:text-sm lg:text-lg text-gray-600">
+            <p className="text-md text-center md:text-left md:text-sm lg:text-lg text-gray-600">
               <strong>Telephone:</strong> 098-459-6582 (Within Thailand)
               <br />
               <strong>Oversea Call:</strong> +66 98-459-6582
               <br />
               <strong>WhatsApp:</strong> 098-459-6582
             </p>
-            <h4 className="sm:text-md sm:text-center md:text-left md:text-lg lg:text-2xl font-semibold text-gray-800 sm:mt-3 md:mt-8">
+            <h4 className="text-md text-center md:text-left md:text-lg lg:text-2xl font-semibold text-gray-800 sm:mt-3 md:mt-8">
               About Us
             </h4>
           </div>
@@ -68,7 +68,7 @@ export default function Footer() {
                 alt="Facebook QR Code"
                 width={100} // ปรับความกว้างของ QR
                 height={100}
-                className="sm:w-[8rem] md:w-[7rem] lg:w-[10rem]"
+                className="w-[8rem] md:w-[7rem] lg:w-[10rem]"
               />
               <p className=" text-gray-600 md:text-xs text-sm mb-2 hidden md:block">
                 FB : <span className="hidden lg:block"> https://web.facebook.com/</span>paradiseexpress56/
@@ -78,7 +78,7 @@ export default function Footer() {
                 alt="LINE QR Code"
                 width={70} // ปรับขนาด QR Code
                 height={70}
-                className="sm:w-[6rem] md:w-[7rem] lg:w-[7rem]"
+                className="w-[6rem] md:w-[7rem] lg:w-[7rem]"
               />
             </div>
             <p className="hidden md:block text-gray-600 md:text-xs text-sm mb-2">@paradiseexpress</p>
