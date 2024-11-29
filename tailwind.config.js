@@ -9,7 +9,7 @@ module.exports = {
     extend: {
       screens: {
         '3xl': '1742px', // สำหรับช่วงระหว่าง 2xl และ 1920px
-        'hd': '1920px',  // สำหรับหน้าจอ Full HD (1920x1080)
+        'hd': '1919px',  // สำหรับหน้าจอ Full HD (1920x1080)
       },
       container: {
         center: true,

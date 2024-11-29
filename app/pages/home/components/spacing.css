@@ -1,0 +1,49 @@
+.text-spacing-1 {
+  letter-spacing: 16px; /* ค่าเริ่มต้น */
+  @media (max-width: 639px) { /* หน้าจอเล็กกว่า 640px */
+    letter-spacing: 0px; /* สไตล์สำหรับหน้าจอขนาดเล็ก */
+  }
+  /* ปรับตาม breakpoint */
+  @media (min-width: 640px) { /* หน้าจอขนาด md */
+    letter-spacing: 6px;
+  }
+  @media (min-width: 768px) { /* หน้าจอขนาด md */
+    letter-spacing: 8px;
+  }
+
+  @media (min-width: 1024px) { /* หน้าจอขนาด lg */
+    letter-spacing: 12px;
+  }
+
+  @media (min-width: 1280px) { /* หน้าจอขนาด xl */
+    letter-spacing: 14px;
+  }
+  @media (min-width: 1536px) { /* หน้าจอขนาด xl */
+    letter-spacing: 15px;
+  }
+}
+
+.text-spacing-2 {
+  letter-spacing: 19px; /* ค่าเริ่มต้น */
+  @media (max-width: 639px) { /* หน้าจอเล็กกว่า 640px */
+    letter-spacing: 0px; /* สไตล์สำหรับหน้าจอขนาดเล็ก */
+  }
+  /* ปรับตาม breakpoint */
+  @media (min-width: 640px) { /* หน้าจอขนาด md */
+    letter-spacing: 9px;
+  }
+  @media (min-width: 768px) { /* หน้าจอขนาด md */
+    letter-spacing: 11px;
+  }
+
+  @media (min-width: 1024px) { /* หน้าจอขนาด lg */
+    letter-spacing: 15px;
+  }
+
+  @media (min-width: 1280px) { /* หน้าจอขนาด xl */
+    letter-spacing: 17px;
+  }
+  @media (min-width: 1536px) { /* หน้าจอขนาด xl */
+    letter-spacing: 18px;
+  }
+}
