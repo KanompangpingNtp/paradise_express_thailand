@@ -20,7 +20,4 @@
         <TourAsia />
       </section>
 
-      {/* Transfer Section */}
-      <section className="bg-white py-10">
-        <Transfer />
-      </section>
+     
