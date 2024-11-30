@@ -21,8 +21,8 @@ const styles = {
     visible: "translate-y-0",
   },
   container:
-    "container mx-auto px-4 flex justify-between items-center h-14 text-xl lg:text-lg",
-  logo: "text-lg font-bold cursor-pointer",
+    "container mx-auto px-4 flex justify-between items-center h-20 text-xl lg:text-lg",
+  logo: "text-lg font-bold cursor-pointer h-auto w-auto",
   menuWrapper: "flex gap-6 justify-center flex-grow",
   menu: "flex gap-6",
   link: "transition-colors duration-300 mx-4",

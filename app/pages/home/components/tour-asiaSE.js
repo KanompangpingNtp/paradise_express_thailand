@@ -65,7 +65,7 @@ const TourAsiaSE = () => {
   ];
 
   return (
-    <div className="container mx-auto px-2 sm:px-8 pb-10">
+    <div className=" px-2 sm:px-8 pb-10 bg-white">
         <div className="text-black text-2xl sm:text-4xl font-bold text-center py-10">
           TOUR ASIA
         </div>

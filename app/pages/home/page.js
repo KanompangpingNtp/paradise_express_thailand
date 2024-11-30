@@ -36,18 +36,18 @@ const Home = () => {
       {/* Asia Tour Section */}
       <section>
         {/* แสดง TourAsiaSE สำหรับหน้าจอน้อยกว่า sm */}
-        <div className="block container mx-auto sm:hidden shadow-2xl shadow-black">
+        <div className="block container mx-auto bg-white sm:hidden">
           <TourAsiaSE />
         </div>
         {/* แสดง TourAsia สำหรับหน้าจอที่มีขนาดตั้งแต่ sm ขึ้นไป */}
-        <div className="hidden sm:block shadow-2xl shadow-black">
+        <div className="hidden sm:block ">
           <TourAsia />
         </div>
       </section>
        {/* Transfer Section */}
-       <section >
+       {/* <section >
         <Transfer />
-      </section>
+      </section> */}
     </div>
   );
 };
