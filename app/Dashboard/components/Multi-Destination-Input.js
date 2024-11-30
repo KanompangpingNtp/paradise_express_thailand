@@ -8,7 +8,7 @@ import {
 const MultiDestinationInput = ({
   onDestinationsChange,
   initialDestinations = [],
-  placeholder = "Where do you want to go?",
+  placeholder = "มีไรเด่นบ้างอะพี่",
   maxDestinations = 10,
   className = '',
 }) => {
