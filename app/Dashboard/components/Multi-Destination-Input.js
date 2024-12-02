@@ -1,27 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  XMarkIcon,
-  PlusCircleIcon,
-  MapPinIcon,
-} from "@heroicons/react/24/solid";
+import React, { useState, useEffect, useRef } from 'react';
+import { XMarkIcon, PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/solid";
 
 const MultiDestinationInput = ({
   onDestinationsChange,
-  initialDestinations = [],
+  destinations = [], // รับ destinations จาก prop
   placeholder = "มีไรเด่นบ้างอะพี่",
   maxDestinations = 10,
   className = '',
 }) => {
-  const [destinations, setDestinations] = useState(initialDestinations);
   const [currentDestination, setCurrentDestination] = useState('');
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    // เรียก callback function เมื่อ destinations เปลี่ยนแปลง
-    if (onDestinationsChange) {
-      onDestinationsChange(destinations);
-    }
-  }, [destinations, onDestinationsChange]);
 
   const handleAddDestination = () => {
     const trimmedDestination = currentDestination.trim();
@@ -32,9 +20,8 @@ const MultiDestinationInput = ({
       !destinations.includes(trimmedDestination) &&
       destinations.length < maxDestinations
     ) {
-      const newDestinations = [...destinations, trimmedDestination];
-      setDestinations(newDestinations);
-      setCurrentDestination('');
+      onDestinationsChange([...destinations, trimmedDestination]); // ส่งค่ากลับไปที่ TourForm
+      setCurrentDestination(''); // ล้าง input field
       if (inputRef.current) {
         inputRef.current.focus();
       }
@@ -42,7 +29,7 @@ const MultiDestinationInput = ({
   };
 
   const handleRemoveDestination = (destinationToRemove) => {
-    setDestinations(destinations.filter(dest => dest !== destinationToRemove));
+    onDestinationsChange(destinations.filter(dest => dest !== destinationToRemove)); // ส่งค่ากลับไปที่ TourForm
   };
 
   const handleKeyPress = (e) => {
@@ -76,13 +63,11 @@ const MultiDestinationInput = ({
             className="absolute right-1 top-1/2 -translate-y-1/2 transform"
           >
             <PlusCircleIcon
-              className={`
-                ${destinations.length >= maxDestinations
+              className={`${
+                destinations.length >= maxDestinations
                   ? 'text-gray-300'
                   : 'text-blue-500 hover:text-blue-600'
-                }
-                transition-colors duration-300 w-11 h-11
-              `}
+              } transition-colors duration-300 w-11 h-11`}
             />
           </button>
         </div>
@@ -102,6 +87,7 @@ const MultiDestinationInput = ({
             >
               <span className="text-sm">{destination}</span>
               <button
+                type="button"
                 onClick={() => handleRemoveDestination(destination)}
                 className="text-blue-500 hover:text-blue-700 rounded-full hover:bg-blue-100 p-1 transition-all duration-300"
               >

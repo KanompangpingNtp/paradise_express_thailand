@@ -1,7 +1,12 @@
 "use client";
 import React, { useState, useCallback } from "react";
 import MultiDestinationInput from "../components/Multi-Destination-Input";
-import { CameraIcon, MapPinIcon, StarIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import {
+  CameraIcon,
+  MapPinIcon,
+  StarIcon,
+  CloudArrowUpIcon,
+} from "@heroicons/react/24/solid";
 
 export default function TourForm() {
   const [formData, setFormData] = useState({
@@ -15,7 +20,6 @@ export default function TourForm() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ใช้ useCallback เพื่อป้องกันการอัปเดตซ้ำ
   const handleDestinationsChange = useCallback((updatedDestinations) => {
     setFormData((prev) => ({
       ...prev,
@@ -32,22 +36,31 @@ export default function TourForm() {
   };
 
   const handleImageUpload = (e) => {
-    const maxSize = 2 * 1024 * 1024;
-    const files = Array.from(e.target.files);
-    const processedFiles = files
-      .filter((file) => {
-        if (file.size > maxSize) {
-          alert(`ไฟล์ ${file.name} มีขนาดเกิน ${maxSize / (1024 * 1024)} MB`);
-          return false;
-        }
-        return true;
-      })
-      .map((file, index) => ({
-        file,
-        status: index === 0 ? 1 : 2,
-        preview: URL.createObjectURL(file),
-      }));
-    setImageFiles(processedFiles);
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    const files = Array.from(e.target.files).filter((file) => {
+      if (file.size > maxSize) {
+        alert(`ไฟล์ ${file.name} มีขนาดเกิน ${maxSize / (1024 * 1024)} MB`);
+        return false;
+      }
+      return true;
+    });
+
+    const newFiles = files.map((file, index) => ({
+      file,
+      status: imageFiles.length === 0 && index === 0 ? 1 : 2,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setImageFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  };
+
+  const handleRemoveImage = (index) => {
+    const newImageFiles = [...imageFiles];
+    const removedImage = newImageFiles.splice(index, 1);
+    if (removedImage[0]?.preview) {
+      URL.revokeObjectURL(removedImage[0].preview);
+    }
+    setImageFiles(newImageFiles);
   };
 
   const validateForm = () => {
@@ -55,64 +68,80 @@ export default function TourForm() {
     if (!formData.tour_section_name)
       newErrors.tour_section_name = "กรุณาระบุหัวข้อทัวร์";
     if (!formData.tour_name) newErrors.tour_name = "กรุณาระบุชื่อทัวร์";
-    if (!formData.tour_detail) newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
-
+    if (!formData.tour_detail)
+      newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
+    if (
+      !formData.tour_highlights_detail ||
+      formData.tour_highlights_detail.length === 0
+    ) {
+      newErrors.tour_highlights_detail = "กรุณาเพิ่มสถานที่ท่องเที่ยว";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
-    // ตรวจสอบว่าข้อมูลครบถ้วนก่อนการ submit
-    if (validateForm()) {
-      if (!formData.tour_highlights_detail || formData.tour_highlights_detail.length === 0) {
-        alert("กรุณาเพิ่มสถานที่ท่องเที่ยว");
-        return;
-      }
+    setIsSubmitting(true); // เริ่มต้นการส่งข้อมูล
 
-      const formDataToSend = {
-        tour_section_name: formData.tour_section_name,
-        tour_name: formData.tour_name,
-        tour_detail: formData.tour_detail,
-        tour_highlights_detail: formData.tour_highlights_detail,
-        images: imageFiles.map((imageFile, index) => ({
-          file: imageFile.file,
-          status: imageFile.status,
-          preview: imageFile.preview,
-        })),
-      };
+    const formDataToSend = new FormData();
+    formDataToSend.append("tour_section_name", formData.tour_section_name);
+    formDataToSend.append("tour_name", formData.tour_name);
+    formDataToSend.append("tour_detail", formData.tour_detail);
 
-      console.log("Form Data (Before Submit):", formDataToSend);
+    // สร้าง object สำหรับเก็บข้อมูลทั้งหมดที่เราจะส่ง
+    const dataToSend = {
+      tour_section_name: formData.tour_section_name,
+      tour_name: formData.tour_name,
+      tour_detail: formData.tour_detail,
+      tour_highlights_detail: formData.tour_highlights_detail,
+      images: imageFiles.map((imageFile, index) => ({
+        fileName: imageFile.file.name,
+        status: imageFile.status,
+        preview: imageFile.preview,
+      })),
+    };
 
-      try {
-        const response = await fetch("/api/tours", {
-          method: "POST",
-          body: JSON.stringify(formDataToSend),
-          headers: {
-            "Content-Type": "application/json",
-          },
+    // log ค่า dataToSend ที่เราจะส่ง
+    console.log("Form Data to Send:", dataToSend);
+
+    // ส่งข้อมูล tour_highlights_detail อย่างแยกต่างหาก
+    formData.tour_highlights_detail.forEach((highlight, index) => {
+      formDataToSend.append("tour_highlights_detail[]", highlight);
+    });
+
+    imageFiles.forEach((imageFile, index) => {
+      formDataToSend.append(`images[${index}]`, imageFile.file);
+      formDataToSend.append(`image_status_${index}`, imageFile.status);
+    });
+
+    try {
+      const response = await fetch("/api/tours", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setFormData({
+          tour_section_name: "",
+          tour_name: "",
+          tour_detail: "",
+          tour_highlights_detail: [],
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Tour created successfully:", data);
-          setFormData({
-            tour_section_name: "",
-            tour_name: "",
-            tour_detail: "",
-            tour_highlights_detail: [],
-          });
-          setImageFiles([]);
-        } else {
-          const errorData = await response.json();
-          alert(`เกิดข้อผิดพลาด: ${errorData.message || response.statusText}`);
-        }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-      } finally {
-        setIsSubmitting(false);
+        setImageFiles([]);
+      } else {
+        const errorData = await response.json();
+        alert(`เกิดข้อผิดพลาด: ${errorData.message || response.statusText}`);
       }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setIsSubmitting(false); // เสร็จสิ้นการส่งข้อมูล
     }
   };
 
@@ -175,7 +204,9 @@ export default function TourForm() {
               }`}
             />
             {errors.tour_name && (
-              <span className="text-red-500 text-sm mt-1">{errors.tour_name}</span>
+              <span className="text-red-500 text-sm mt-1">
+                {errors.tour_name}
+              </span>
             )}
           </div>
 
@@ -196,7 +227,9 @@ export default function TourForm() {
               }`}
             />
             {errors.tour_detail && (
-              <span className="text-red-500 text-sm mt-1">{errors.tour_detail}</span>
+              <span className="text-red-500 text-sm mt-1">
+                {errors.tour_detail}
+              </span>
             )}
           </div>
 
@@ -220,15 +253,34 @@ export default function TourForm() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`btn btn-primary w-full ${isSubmitting ? "loading" : ""}`}
-            >
-              {isSubmitting ? "กำลังส่ง..." : "สร้างทัวร์"}
-            </button>
+          <div className="image-preview-grid flex gap-4 flex-wrap">
+            {imageFiles.map((image, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={image.preview}
+                  alt={`Uploaded preview ${index + 1}`}
+                  className="w-20 h-20 object-cover rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(index)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
+
+          <button
+            type="submit"
+            className={`btn btn-primary w-full mt-4 ${
+              isSubmitting ? "btn-disabled loading" : ""
+            }`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "กำลังส่ง..." : "สร้างทัวร์"}
+          </button>
         </form>
       </div>
     </div>
