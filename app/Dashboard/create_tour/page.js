@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useCallback } from "react";
 import MultiDestinationInput from "../components/Multi-Destination-Input";
+import Image from "next/image";
 import {
   CameraIcon,
   MapPinIcon,
@@ -256,19 +257,22 @@ export default function TourForm() {
           <div className="image-preview-grid flex gap-4 flex-wrap">
             {imageFiles.map((image, index) => (
               <div key={index} className="relative">
-                <img
-                  src={image.preview}
-                  alt={`Uploaded preview ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                >
-                  ×
-                </button>
-              </div>
+              <Image
+                src={image.preview}
+                alt={`Uploaded preview ${index + 1}`}
+                width={80} // กำหนดขนาดที่คุณต้องการ
+                height={80} // กำหนดขนาดที่คุณต้องการ
+                className="object-cover rounded"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+              >
+                ×
+              </button>
+            </div>
+
             ))}
           </div>
 
