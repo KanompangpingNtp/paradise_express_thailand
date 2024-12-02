@@ -24,24 +24,38 @@ export async function POST(req) {
     // log ค่า formData ที่รับเข้ามา
     console.log("Received Form Data:", formData);
 
-    const tourSectionName = formData.get("tour_section_name");
+    const tourSectionId = formData.get("tour_section_name");
     const tourName = formData.get("tour_name");
     const tourDetail = formData.get("tour_detail");
 
-    // แทรกข้อมูล tour_section
-    const [sectionResult] = await pool.execute(
-      `INSERT INTO tour_section (tour_section_name, created_at, updated_at) VALUES (?, NOW(), NOW())`,
-      [tourSectionName]
-    );
-
-    const tourSectionId = sectionResult.insertId;
-
-    // แทรกข้อมูล tour
-    const [tourResult] = await pool.execute(
-      `INSERT INTO tour (tour_section_id, tour_name, tour_detail, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())`,
-      [tourSectionId, tourName, tourDetail]
-    );
-
+    // ตรวจสอบว่า tourSectionId มีค่าหรือไม่
+    if (!tourSectionId) {
+        return new Response(
+          JSON.stringify({ success: false, message: "กรุณาเลือกหัวข้อทัวร์" }),
+          { status: 400 }
+        );
+      }
+  
+      // ตรวจสอบว่า `tourSectionId` ที่รับมาจากฟอร์มมีอยู่ในฐานข้อมูลหรือไม่
+      const [sectionResult] = await pool.execute(
+        `SELECT id FROM tour_section WHERE id = ?`,
+        [tourSectionId]
+      );
+  
+      if (sectionResult.length === 0) {
+        return new Response(
+          JSON.stringify({ success: false, message: "หัวข้อทัวร์ไม่ถูกต้อง" }),
+          { status: 400 }
+        );
+      }
+  
+      // สร้างข้อมูลในตาราง `tour`
+      const [tourResult] = await pool.execute(
+        `INSERT INTO tour (tour_section_id, tour_name, tour_detail, created_at, updated_at) 
+        VALUES (?, ?, ?, NOW(), NOW())`,
+        [tourSectionId, tourName, tourDetail]
+      );
+      
     const tourId = tourResult.insertId;
 
     // ดึงข้อมูล tour_highlights_detail[] และแทรกข้อมูลในตาราง tour_highlight
