@@ -1,5 +1,22 @@
 import { pool } from "@/lib/db";
 
+export async function GET() {
+    try {
+      const [rows] = await pool.execute("SELECT id, tour_section_name FROM tour_section");
+      return new Response(JSON.stringify(rows), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching tour sections:", error);
+      return new Response(JSON.stringify({ success: false, message: "Failed to fetch tour sections" }), {
+        status: 500,
+      });
+    }
+  }
+
 export async function POST(req) {
   try {
     const formData = await req.formData();
