@@ -70,6 +70,7 @@ const MultiDestinationInput = ({
             disabled={destinations.length >= maxDestinations}
           />
           <button
+            type="button"
             onClick={handleAddDestination}
             disabled={destinations.length >= maxDestinations}
             className="absolute right-1 top-1/2 -translate-y-1/2 transform"
