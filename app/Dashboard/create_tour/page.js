@@ -1,51 +1,27 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
+import React, { useState, useCallback } from "react";
 import MultiDestinationInput from "../components/Multi-Destination-Input";
-import {
-  CameraIcon,
-  MapPinIcon,
-  StarIcon,
-  CloudArrowUpIcon,
-} from "@heroicons/react/24/solid";
+import { CameraIcon, MapPinIcon, StarIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 
 export default function TourForm() {
   const [formData, setFormData] = useState({
     tour_section_name: "",
     tour_name: "",
     tour_detail: "",
-    tour_highlights_detail: [], // tour_highlights_detail เก็บสถานที่ท่องเที่ยว
+    tour_highlights_detail: [],
   });
 
   const [imageFiles, setImageFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const prevDestinations = useRef(formData.tour_highlights_detail); // Track previous destinations
-
-  useEffect(() => {
-    prevDestinations.current = formData.tour_highlights_detail;
-  }, [formData.tour_highlights_detail]); // Update when formData changes
-
-  // handleDestinationsChange ใช้ useCallback เพื่อป้องกันไม่ให้เรียกใหม่ทุกครั้ง
+  // ใช้ useCallback เพื่อป้องกันการอัปเดตซ้ำ
   const handleDestinationsChange = useCallback((updatedDestinations) => {
-    console.log("Updated Destinations:", updatedDestinations); // ตรวจสอบค่าที่ได้รับ
     setFormData((prev) => ({
       ...prev,
       tour_highlights_detail: updatedDestinations,
     }));
-  }, []); // useCallback จะคงฟังก์ชันนี้ไว้เมื่อไม่มี dependency ที่ต้องการการอัปเดต
-
-  useEffect(() => {
-    // Cleanup object URLs to prevent memory leaks
-    return () => {
-      imageFiles.forEach((imageFile) => {
-        if (imageFile.preview) {
-          URL.revokeObjectURL(imageFile.preview);
-        }
-      });
-    };
-  }, [imageFiles]);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,7 +32,7 @@ export default function TourForm() {
   };
 
   const handleImageUpload = (e) => {
-    const maxSize = 2 * 1024 * 1024; // 2 MB
+    const maxSize = 2 * 1024 * 1024;
     const files = Array.from(e.target.files);
     const processedFiles = files
       .filter((file) => {
@@ -79,8 +55,7 @@ export default function TourForm() {
     if (!formData.tour_section_name)
       newErrors.tour_section_name = "กรุณาระบุหัวข้อทัวร์";
     if (!formData.tour_name) newErrors.tour_name = "กรุณาระบุชื่อทัวร์";
-    if (!formData.tour_detail)
-      newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
+    if (!formData.tour_detail) newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -89,50 +64,39 @@ export default function TourForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ตรวจสอบว่าข้อมูลครบถ้วนก่อนการ submit
     if (validateForm()) {
-      // ตรวจสอบว่า tour_highlights_detail มีค่าหรือไม่
-      if (!formData.tour_highlights_detail.length) {
+      if (!formData.tour_highlights_detail || formData.tour_highlights_detail.length === 0) {
         alert("กรุณาเพิ่มสถานที่ท่องเที่ยว");
         return;
       }
 
-      // แสดงค่าตัวแปร formData และ imageFiles ก่อนส่ง
-      console.log("Form Data (Before Submit):", formData);
-      console.log("Image Files (Before Submit):", imageFiles);
+      const formDataToSend = {
+        tour_section_name: formData.tour_section_name,
+        tour_name: formData.tour_name,
+        tour_detail: formData.tour_detail,
+        tour_highlights_detail: formData.tour_highlights_detail,
+        images: imageFiles.map((imageFile, index) => ({
+          file: imageFile.file,
+          status: imageFile.status,
+          preview: imageFile.preview,
+        })),
+      };
 
-      // การส่งข้อมูล
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (key === "tour_highlights_detail") {
-          formData[key].forEach((item, index) => {
-            formDataToSend.append(`tour_highlights_detail[${index}]`, item);
-          });
-        } else {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
-
-      imageFiles.forEach((imageFile, index) => {
-        formDataToSend.append(`images[${index}]`, imageFile.file);
-        formDataToSend.append(`image_status_${index}`, imageFile.status);
-      });
-
-      // ตรวจสอบค่าที่จะส่ง
-      console.log("FormData to Send (Prepared):");
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(`${key}:`, value);
-      }
+      console.log("Form Data (Before Submit):", formDataToSend);
 
       try {
         const response = await fetch("/api/tours", {
           method: "POST",
-          body: formDataToSend,
+          body: JSON.stringify(formDataToSend),
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
 
         if (response.ok) {
           const data = await response.json();
           console.log("Tour created successfully:", data);
-          // Reset form fields
           setFormData({
             tour_section_name: "",
             tour_name: "",
@@ -236,66 +200,35 @@ export default function TourForm() {
             )}
           </div>
 
-          <div className="form-control">
-            <label className="label flex items-center gap-2">
-              <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
-              <span className="label-text font-semibold text-gray-700">
-                สถานที่ท่องเที่ยว
-              </span>
-            </label>
-            <MultiDestinationInput
-              destinations={formData.tour_highlights_detail}
-              onDestinationsChange={handleDestinationsChange}
-            />
-          </div>
+          <MultiDestinationInput
+            destinations={formData.tour_highlights_detail}
+            onDestinationsChange={handleDestinationsChange}
+          />
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
               <span className="label-text font-semibold text-gray-700">
-                อัปโหลดรูปภาพ
+                อัพโหลดรูปภาพ
               </span>
             </label>
             <input
               type="file"
               multiple
-              accept="image/*"
               onChange={handleImageUpload}
-              className="file-input file-input-bordered file-input-primary w-full"
+              className="file-input file-input-bordered w-full text-black"
             />
-            <div className="mt-2 flex gap-3">
-              {imageFiles.map((imageFile, index) => (
-                <div key={index} className="relative">
-                  <Image
-                    src={imageFile.preview}
-                    alt={`Image Preview ${index + 1}`}
-                    width={100}
-                    height={100}
-                    className="rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setImageFiles((prevFiles) =>
-                        prevFiles.filter((_, i) => i !== index)
-                      );
-                    }}
-                    className="absolute top-0 right-0 text-white bg-red-500 rounded-full w-5 h-5 flex justify-center items-center"
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn btn-primary w-full"
-          >
-            {isSubmitting ? "กำลังบันทึก..." : "บันทึกทัวร์"}
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`btn btn-primary w-full ${isSubmitting ? "loading" : ""}`}
+            >
+              {isSubmitting ? "กำลังส่ง..." : "สร้างทัวร์"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
