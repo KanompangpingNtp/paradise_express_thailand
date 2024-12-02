@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import MultiDestinationInput from "../components/Multi-Destination-Input";
 import {
@@ -14,28 +14,27 @@ export default function TourForm() {
     tour_section_name: "",
     tour_name: "",
     tour_detail: "",
-    tour_highlights_detail: [],
+    tour_highlights_detail: [], // tour_highlights_detail เก็บสถานที่ท่องเที่ยว
   });
 
   const [imageFiles, setImageFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const prevDestinations = useRef(formData.tour_highlights_detail); // Using a ref to track the previous destinations
+  const prevDestinations = useRef(formData.tour_highlights_detail); // Track previous destinations
 
   useEffect(() => {
     prevDestinations.current = formData.tour_highlights_detail;
-  }, [formData.tour_highlights_detail]); // Update ref whenever formData changes
+  }, [formData.tour_highlights_detail]); // Update when formData changes
 
-  const handleDestinationsChange = (updatedDestinations) => {
-    // Only update state if the destinations have actually changed
-    if (JSON.stringify(prevDestinations.current) !== JSON.stringify(updatedDestinations)) {
-      setFormData((prev) => ({
-        ...prev,
-        tour_highlights_detail: updatedDestinations,
-      }));
-    }
-  };
+  // handleDestinationsChange ใช้ useCallback เพื่อป้องกันไม่ให้เรียกใหม่ทุกครั้ง
+  const handleDestinationsChange = useCallback((updatedDestinations) => {
+    console.log("Updated Destinations:", updatedDestinations); // ตรวจสอบค่าที่ได้รับ
+    setFormData((prev) => ({
+      ...prev,
+      tour_highlights_detail: updatedDestinations,
+    }));
+  }, []); // useCallback จะคงฟังก์ชันนี้ไว้เมื่อไม่มี dependency ที่ต้องการการอัปเดต
 
   useEffect(() => {
     // Cleanup object URLs to prevent memory leaks
@@ -91,13 +90,22 @@ export default function TourForm() {
     e.preventDefault();
 
     if (validateForm()) {
-      setIsSubmitting(true);
-      const formDataToSend = new FormData();
+      // ตรวจสอบว่า tour_highlights_detail มีค่าหรือไม่
+      if (!formData.tour_highlights_detail.length) {
+        alert("กรุณาเพิ่มสถานที่ท่องเที่ยว");
+        return;
+      }
 
+      // แสดงค่าตัวแปร formData และ imageFiles ก่อนส่ง
+      console.log("Form Data (Before Submit):", formData);
+      console.log("Image Files (Before Submit):", imageFiles);
+
+      // การส่งข้อมูล
+      const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (Array.isArray(formData[key])) {
+        if (key === "tour_highlights_detail") {
           formData[key].forEach((item, index) => {
-            formDataToSend.append(`${key}[${index}]`, item);
+            formDataToSend.append(`tour_highlights_detail[${index}]`, item);
           });
         } else {
           formDataToSend.append(key, formData[key]);
@@ -109,6 +117,12 @@ export default function TourForm() {
         formDataToSend.append(`image_status_${index}`, imageFile.status);
       });
 
+      // ตรวจสอบค่าที่จะส่ง
+      console.log("FormData to Send (Prepared):");
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(`${key}:`, value);
+      }
+
       try {
         const response = await fetch("/api/tours", {
           method: "POST",
@@ -118,7 +132,7 @@ export default function TourForm() {
         if (response.ok) {
           const data = await response.json();
           console.log("Tour created successfully:", data);
-
+          // Reset form fields
           setFormData({
             tour_section_name: "",
             tour_name: "",
@@ -197,9 +211,7 @@ export default function TourForm() {
               }`}
             />
             {errors.tour_name && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.tour_name}
-              </span>
+              <span className="text-red-500 text-sm mt-1">{errors.tour_name}</span>
             )}
           </div>
 
@@ -212,24 +224,30 @@ export default function TourForm() {
             </label>
             <textarea
               name="tour_detail"
-              placeholder="ระบุรายละเอียดทัวร์"
+              placeholder="กรอกรายละเอียดทัวร์"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-32 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
+              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-40 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
                 errors.tour_detail ? "border-red-500" : ""
               }`}
             />
             {errors.tour_detail && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.tour_detail}
-              </span>
+              <span className="text-red-500 text-sm mt-1">{errors.tour_detail}</span>
             )}
           </div>
 
-          <MultiDestinationInput
-            value={formData.tour_highlights_detail}
-            onChange={handleDestinationsChange}
-          />
+          <div className="form-control">
+            <label className="label flex items-center gap-2">
+              <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
+              <span className="label-text font-semibold text-gray-700">
+                สถานที่ท่องเที่ยว
+              </span>
+            </label>
+            <MultiDestinationInput
+              destinations={formData.tour_highlights_detail}
+              onDestinationsChange={handleDestinationsChange}
+            />
+          </div>
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
@@ -243,19 +261,41 @@ export default function TourForm() {
               multiple
               accept="image/*"
               onChange={handleImageUpload}
-              className="input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+              className="file-input file-input-bordered file-input-primary w-full"
             />
+            <div className="mt-2 flex gap-3">
+              {imageFiles.map((imageFile, index) => (
+                <div key={index} className="relative">
+                  <Image
+                    src={imageFile.preview}
+                    alt={`Image Preview ${index + 1}`}
+                    width={100}
+                    height={100}
+                    className="rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageFiles((prevFiles) =>
+                        prevFiles.filter((_, i) => i !== index)
+                      );
+                    }}
+                    className="absolute top-0 right-0 text-white bg-red-500 rounded-full w-5 h-5 flex justify-center items-center"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="form-control mt-6">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn btn-primary w-full text-white"
-            >
-              {isSubmitting ? "กำลังบันทึก..." : "บันทึก"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn btn-primary w-full"
+          >
+            {isSubmitting ? "กำลังบันทึก..." : "บันทึกทัวร์"}
+          </button>
         </form>
       </div>
     </div>
