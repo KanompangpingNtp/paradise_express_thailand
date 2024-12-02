@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import React, { useState, useCallback } from "react";
 import MultiDestinationInput from "../components/Multi-Destination-Input";
 import {
   CameraIcon,
@@ -17,7 +16,6 @@ export default function TourForm() {
     tour_highlights_detail: [],
   });
 
-  const [tourSections, setTourSections] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,7 +62,6 @@ export default function TourForm() {
     }
     setImageFiles(newImageFiles);
   };
-
 
   const validateForm = () => {
     const newErrors = {};
@@ -167,21 +164,21 @@ export default function TourForm() {
               </span>
             </label>
             <select
-              name="tour_section_name" // ส่งค่าเป็น `tour_section_name`
+              name="tour_section_name"
               value={formData.tour_section_name}
               onChange={handleInputChange}
-              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_section_name ? "border-red-500" : ""}`}
+              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
+                errors.tour_section_name ? "border-red-500" : ""
+              }`}
             >
               <option value="" disabled>
                 กรุณาเลือกหัวข้อทัวร์
               </option>
-              {tourSections.map((section) => (
-                <option key={section.id} value={section.id}> {/* ใช้ `section.id` เป็นค่าใน option */}
-                  {section.tour_section_name}
-                </option>
-              ))}
+              <option value="adventure">การผจญภัย</option>
+              <option value="relaxation">การพักผ่อน</option>
+              <option value="cultural">การท่องเที่ยวเชิงวัฒนธรรม</option>
+              <option value="nature">ธรรมชาติ</option>
             </select>
-
             {errors.tour_section_name && (
               <span className="text-red-500 text-sm mt-1">
                 {errors.tour_section_name}
@@ -202,8 +199,9 @@ export default function TourForm() {
               placeholder="ระบุชื่อทัวร์"
               value={formData.tour_name}
               onChange={handleInputChange}
-              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_name ? "border-red-500" : ""
-                }`}
+              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
+                errors.tour_name ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_name && (
               <span className="text-red-500 text-sm mt-1">
@@ -221,11 +219,12 @@ export default function TourForm() {
             </label>
             <textarea
               name="tour_detail"
-              placeholder="ระบุรายละเอียดทัวร์"
+              placeholder="กรอกรายละเอียดทัวร์"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-32 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_detail ? "border-red-500" : ""
-                }`}
+              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-40 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
+                errors.tour_detail ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_detail && (
               <span className="text-red-500 text-sm mt-1">
@@ -235,23 +234,22 @@ export default function TourForm() {
           </div>
 
           <MultiDestinationInput
-            value={formData.tour_highlights_detail}
-            onChange={handleDestinationsChange}
+            destinations={formData.tour_highlights_detail}
+            onDestinationsChange={handleDestinationsChange}
           />
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
               <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
               <span className="label-text font-semibold text-gray-700">
-                อัปโหลดรูปภาพ
+                อัพโหลดรูปภาพ
               </span>
             </label>
             <input
               type="file"
               multiple
-              accept="image/*"
               onChange={handleImageUpload}
-              className="input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+              className="file-input file-input-bordered w-full text-black"
             />
           </div>
 
