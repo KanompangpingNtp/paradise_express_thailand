@@ -28,6 +28,8 @@ const DetailTour = () => {
   const [email, setEmail] = useState(""); // อีเมล
   const [phone, setPhone] = useState(""); // เบอร์โทร
   const [activeTab, setActiveTab] = useState("overview");
+  const [nameTour, setNameTour] = useState("");
+  const [section_nameTour, setSection_NameTour] = useState("");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -44,9 +46,17 @@ const DetailTour = () => {
   useEffect(() => {
     const cardData = searchParams.get("card");
     if (cardData) {
-      setCard(JSON.parse(cardData)); // แปลงข้อมูลจาก query string
+      const parsedCard = JSON.parse(cardData);
+      setCard(parsedCard); // แปลงข้อมูลจาก query string และตั้งค่า card
+      if (parsedCard.name) {
+        setNameTour(parsedCard.name);
+      }
+      if (parsedCard.section_name) {
+        setSection_NameTour(parsedCard.section_name);
+      }
     }
   }, [searchParams]);
+
 
   console.log(card);
 
@@ -54,43 +64,21 @@ const DetailTour = () => {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const bookingData = {
-    fullName,
-    email,
-    phone,
-    tourDate,
-    totalPersons,
-    adults,
-    children,
-    price: 150, // ราคาอ้างอิงต่อคน
-    totalPrice: totalPersons * 150, // คำนวณราคาทั้งหมด
+    const bookingData = {
+      fullName,
+      email,
+      phone,
+      tourDate,
+      totalPersons,
+      adults,
+      children,
+      nameTour,
+      section_nameTour,
+    };
+
+    console.log("Booking Data:", bookingData); // ตรวจสอบข้อมูล
+    // ที่นี่สามารถส่งข้อมูลนี้ไปยัง API หรือทำการบันทึกข้อมูล
   };
-
-  try {
-    const response = await fetch('/api/send_email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to: email, // ส่งไปยังอีเมลของผู้จอง
-        subject: `Booking Confirmation for ${card.name}`, // หัวข้ออีเมล
-        text: `Dear ${fullName},\n\nThank you for booking the ${card.name} tour on ${tourDate}. Your booking details are as follows:\n\nTotal Persons: ${totalPersons} (Adults: ${adults}, Children: ${children})\nTotal Price: $${bookingData.totalPrice}\n\nWe look forward to seeing you!\n\nBest regards,\nYour Travel Team`, // เนื้อหาอีเมล
-      }),
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      alert(result.message); // แสดงข้อความสำเร็จ
-    } else {
-      const error = await response.json();
-      alert(`Error: ${error.message}`); // แสดงข้อความผิดพลาด
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Something went wrong. Please try again later.');
-  }
-};
 
 
   // กรณีที่ยังไม่ได้รับข้อมูล card
