@@ -28,6 +28,8 @@ const DetailTour = () => {
   const [email, setEmail] = useState(""); // อีเมล
   const [phone, setPhone] = useState(""); // เบอร์โทร
   const [activeTab, setActiveTab] = useState("overview");
+  const [nameTour, setNameTour] = useState("");
+  const [section_nameTour, setSection_NameTour] = useState("");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -44,9 +46,17 @@ const DetailTour = () => {
   useEffect(() => {
     const cardData = searchParams.get("card");
     if (cardData) {
-      setCard(JSON.parse(cardData)); // แปลงข้อมูลจาก query string
+      const parsedCard = JSON.parse(cardData);
+      setCard(parsedCard); // แปลงข้อมูลจาก query string และตั้งค่า card
+      if (parsedCard.name) {
+        setNameTour(parsedCard.name);
+      }
+      if (parsedCard.section_name) {
+        setSection_NameTour(parsedCard.section_name);
+      }
     }
   }, [searchParams]);
+
 
   console.log(card);
   // ฟังก์ชันเมื่อกด submit
@@ -61,8 +71,8 @@ const DetailTour = () => {
       totalPersons,
       adults,
       children,
-      price: 150, // ราคาอ้างอิงต่อคน
-      totalPrice: totalPersons * 150, // คำนวณราคาทั้งหมด
+      nameTour,
+      section_nameTour,
     };
 
     console.log("Booking Data:", bookingData); // ตรวจสอบข้อมูล
