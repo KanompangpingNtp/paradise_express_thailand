@@ -16,7 +16,7 @@ import {
 
 const styles = {
   nav: {
-    base: "fixed top-0 left-0 w-full bg-black text-white transition-transform duration-300 opacity-80 z-50 hidden lg:block",
+    base: "fixed top-0 left-0 w-full bg-black text-white transition-transform duration-300 opacity-80 z-40 hidden lg:block",
     hidden: "-translate-y-full",
     visible: "translate-y-0",
   },
