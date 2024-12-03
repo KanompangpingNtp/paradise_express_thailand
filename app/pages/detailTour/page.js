@@ -49,25 +49,49 @@ const DetailTour = () => {
   }, [searchParams]);
 
   console.log(card);
+
   // ฟังก์ชันเมื่อกด submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const bookingData = {
-      fullName,
-      email,
-      phone,
-      tourDate,
-      totalPersons,
-      adults,
-      children,
-      price: 150, // ราคาอ้างอิงต่อคน
-      totalPrice: totalPersons * 150, // คำนวณราคาทั้งหมด
-    };
-
-    console.log("Booking Data:", bookingData); // ตรวจสอบข้อมูล
-    // ที่นี่สามารถส่งข้อมูลนี้ไปยัง API หรือทำการบันทึกข้อมูล
+  const bookingData = {
+    fullName,
+    email,
+    phone,
+    tourDate,
+    totalPersons,
+    adults,
+    children,
+    price: 150, // ราคาอ้างอิงต่อคน
+    totalPrice: totalPersons * 150, // คำนวณราคาทั้งหมด
   };
+
+  try {
+    const response = await fetch('/api/send_email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: email, // ส่งไปยังอีเมลของผู้จอง
+        subject: `Booking Confirmation for ${card.name}`, // หัวข้ออีเมล
+        text: `Dear ${fullName},\n\nThank you for booking the ${card.name} tour on ${tourDate}. Your booking details are as follows:\n\nTotal Persons: ${totalPersons} (Adults: ${adults}, Children: ${children})\nTotal Price: $${bookingData.totalPrice}\n\nWe look forward to seeing you!\n\nBest regards,\nYour Travel Team`, // เนื้อหาอีเมล
+      }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      alert(result.message); // แสดงข้อความสำเร็จ
+    } else {
+      const error = await response.json();
+      alert(`Error: ${error.message}`); // แสดงข้อความผิดพลาด
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Something went wrong. Please try again later.');
+  }
+};
+
 
   // กรณีที่ยังไม่ได้รับข้อมูล card
   if (!card) {

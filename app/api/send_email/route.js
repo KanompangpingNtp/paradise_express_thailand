@@ -17,8 +17,8 @@ export async function POST(req) {
     // ส่งอีเมล
     await transporter.sendMail({
       from: process.env.EMAIL_USER, // อีเมลผู้ส่ง
-      to, // อีเมลผู้รับ
-      subject, // หัวข้ออีเมล
+      to: "enx1038@gmail.com", // อีเมลผู้รับ
+      subject: "จองทัวร์ท่องเที่ยว", // หัวข้ออีเมล
       text, // เนื้อหาอีเมล
     });
 
