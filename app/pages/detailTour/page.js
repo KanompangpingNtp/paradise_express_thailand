@@ -61,9 +61,9 @@ const DetailTour = () => {
   console.log(card);
 
   // ฟังก์ชันเมื่อกด submit
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const bookingData = {
       fullName,
       email,
@@ -72,14 +72,47 @@ const DetailTour = () => {
       totalPersons,
       adults,
       children,
-      nameTour,
-      section_nameTour,
+      nameTour: card.name, // เพิ่มชื่อทัวร์จาก card
+      section_nameTour: activeTab, // เพิ่มข้อมูลแท็บที่เลือก
     };
-
-    console.log("Booking Data:", bookingData); // ตรวจสอบข้อมูล
-    // ที่นี่สามารถส่งข้อมูลนี้ไปยัง API หรือทำการบันทึกข้อมูล
+  
+    try {
+      const response = await fetch('/api/send_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: "enx1038@gmail.com", // อีเมลผู้รับ
+          subject: "จองทัวร์ท่องเที่ยว",
+          text: `
+            Booking Details:
+            Full Name: ${bookingData.fullName}
+            Email: ${bookingData.email}
+            Phone: ${bookingData.phone}
+            Tour Date: ${bookingData.tourDate}
+            Total Persons: ${bookingData.totalPersons}
+            Adults: ${bookingData.adults}
+            Children: ${bookingData.children}
+            Tour Name: ${bookingData.nameTour}
+            Section: ${bookingData.section_nameTour}
+          `,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+  
+      const result = await response.json();
+      console.log('Email sent successfully:', result);
+      alert('Booking confirmed! Email has been sent.');
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Failed to send booking email. Please try again.');
+    }
   };
-
+  
 
   // กรณีที่ยังไม่ได้รับข้อมูล card
   if (!card) {
