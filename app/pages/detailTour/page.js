@@ -81,8 +81,8 @@ const DetailTour = () => {
         <div className="container mx-auto flex flex-col md:flex-row">
           {/* ฝั่งซ้าย (Image) */}
           <div className="w-full md:w-2/3 p-4">
-            <div className="relative h-80">
-            <ImageSlider images={card.images} />
+            <div className="relative h-[60vh] border">
+              <ImageSlider images={card.images} />
             </div>
             {/* กล่องข้อความใต้รูปภาพ */}
             <div className="mt-4 p-4 rounded-lg">

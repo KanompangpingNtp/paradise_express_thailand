@@ -16,9 +16,9 @@ const ImageSlider = ({ images }) => {
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-lg">
+    <div className="relative w-full mx-auto overflow-hidden rounded-lg shadow-lg">
       {/* Single Image */}
-      <div className="relative w-full h-80">
+      <div className="relative w-full h-[60vh]">
         <img
           src={`/uploads/${images[currentIndex].file}`} // แสดงภาพทีละภาพ
           alt={`Slide ${currentIndex + 1}`}
