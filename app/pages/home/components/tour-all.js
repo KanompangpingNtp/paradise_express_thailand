@@ -1,11 +1,11 @@
 import TourCard from "@/app/components/TourCard";
 import Link from "next/link";
 
-const TourSightseeing = ({ tours }) => {
+const TourAll = ({ sectionName, tours }) => {
   return (
     <div className="container mx-auto px-2 sm:px-8 pb-10">
-      <div className="text-black text-2xl sm:text-4xl font-bold text-center py-10">
-        TOUR OF SIGHTSEEING
+      <div className="text-gray-700 text-2xl sm:text-4xl font-bold text-center py-10">
+      {sectionName}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-3 sm:gap-8">
         {tours.slice(0, 8).map((tour, index) => (
@@ -13,7 +13,7 @@ const TourSightseeing = ({ tours }) => {
         ))}
       </div>
 
-      <div className="flex justify-center w-full text-center sm:justify-end items-center text-black mt-4">
+      <div className="flex justify-center w-full text-center sm:justify-end items-center text-gray-700 mt-4">
         <Link
           href={{
             pathname: "/pages/allTour",
@@ -29,4 +29,4 @@ const TourSightseeing = ({ tours }) => {
   );
 };
 
-export default TourSightseeing;
+export default TourAll;

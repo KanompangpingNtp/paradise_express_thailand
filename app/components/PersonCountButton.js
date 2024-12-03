@@ -23,7 +23,7 @@ const PersonCountButton = ({ label, onCountChange }) => {
 
   return (
     <div className="relative">
-      <label className="block mb-2 text-sm text-end font-medium text-gray-700">{label}</label>
+      <label className="block mb-2 text-sm text-end font-semibold text-gray-700">{label}</label>
       {/* ปุ่มแสดงจำนวนคน */}
       <button
         type="button"
@@ -37,12 +37,13 @@ const PersonCountButton = ({ label, onCountChange }) => {
 
       {/* ดรอปดาวสำหรับกรอกจำนวนคน */}
       {isOpen && (
-        <div className="absolute top-full right-0 w-full bg-white border rounded-md shadow-lg p-4">
+        <div className="absolute top-full right-0 w-full bg-white border rounded-md shadow-lg p-4 z-10">
           <div className="flex flex-col space-y-4">
             <div>
-              <label htmlFor="adults" className="block text-sm text-gray-700">
+              <label htmlFor="adults" className="block text-sm font-semibold text-gray-700">
                 Adults
               </label>
+
               <input
                 type="number"
                 id="adults"
@@ -54,7 +55,7 @@ const PersonCountButton = ({ label, onCountChange }) => {
               />
             </div>
             <div>
-              <label htmlFor="children" className="block text-sm text-gray-700">
+              <label htmlFor="children" className="block text-sm font-semibold text-gray-700">
                 Children
               </label>
               <input

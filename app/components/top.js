@@ -1,7 +1,7 @@
 function Top({ title }) {
   return (
     <div
-      className="w-full h-screen bg-center bg-cover flex items-center justify-center"
+      className="w-full h-screen bg-center bg-cover flex items-center justify-center "
       style={{
         backgroundImage: "url('/images/HeroSection/toppic.png')", // กำหนดรูปภาพเป็นพื้นหลัง
       }}
