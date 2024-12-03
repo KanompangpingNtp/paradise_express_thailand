@@ -20,7 +20,8 @@ export default function TourForm() {
   const [imageFiles, setImageFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tourSections, setTourSections] = useState([]); 
+  const [tourSections, setTourSections] = useState([]);
+  const [pdfFile, setPdfFile] = useState(null);
 
   // ดึงข้อมูลหัวข้อทัวร์จาก API
   useEffect(() => {
@@ -101,6 +102,18 @@ export default function TourForm() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handlePdfUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const isPdf = file.type === "application/pdf";
+      if (!isPdf) {
+        alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
+        return;
+      }
+      setPdfFile(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -138,6 +151,10 @@ export default function TourForm() {
       formDataToSend.append(`image_status_${index}`, imageFile.status);
     });
 
+    if (pdfFile) {
+      formDataToSend.append("pdf_file", pdfFile); // เพิ่มไฟล์ PDF
+    }
+
     try {
       const response = await fetch("/api/tours", {
         method: "POST",
@@ -154,6 +171,7 @@ export default function TourForm() {
           tour_highlights_detail: [],
         });
         setImageFiles([]);
+        setPdfFile(null);  // ล้างไฟล์ PDF หลังจากส่งข้อมูล
       } else {
         const errorData = await response.json();
         alert(`เกิดข้อผิดพลาด: ${errorData.message || response.statusText}`);
@@ -177,34 +195,34 @@ export default function TourForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-        <div className="form-control">
-          <label className="label flex items-center gap-2">
-            <span className="label-text font-semibold text-gray-700">
-              หัวข้อทัวร์
-            </span>
-          </label>
-          <select
-            name="tour_section_name"
-            value={formData.tour_section_name}
-            onChange={handleInputChange}
-            className={`input input-bordered bg-gray-200 text-black w-full border-2 ${errors.tour_section_name ? "border-red-500" : ""
-              }`}
-          >
-            <option value="" disabled>
-              กรุณาเลือกหัวข้อทัวร์
-            </option>
-            {tourSections.map((section) => (
-              <option key={section.id} value={section.id}>
-                {section.tour_section_name}
+          <div className="form-control">
+            <label className="label flex items-center gap-2">
+              <span className="label-text font-semibold text-gray-700">
+                หัวข้อทัวร์
+              </span>
+            </label>
+            <select
+              name="tour_section_name"
+              value={formData.tour_section_name}
+              onChange={handleInputChange}
+              className={`input input-bordered bg-gray-200 text-black w-full border-2 ${errors.tour_section_name ? "border-red-500" : ""
+                }`}
+            >
+              <option value="" disabled>
+                กรุณาเลือกหัวข้อทัวร์
               </option>
-            ))}
-          </select>
-          {errors.tour_section_name && (
-            <span className="text-red-500 text-sm mt-1">
-              {errors.tour_section_name}
-            </span>
-          )}
-        </div>
+              {tourSections.map((section) => (
+                <option key={section.id} value={section.id}>
+                  {section.tour_section_name}
+                </option>
+              ))}
+            </select>
+            {errors.tour_section_name && (
+              <span className="text-red-500 text-sm mt-1">
+                {errors.tour_section_name}
+              </span>
+            )}
+          </div>
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
@@ -219,9 +237,8 @@ export default function TourForm() {
               placeholder="ระบุชื่อทัวร์"
               value={formData.tour_name}
               onChange={handleInputChange}
-              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
-                errors.tour_name ? "border-red-500" : ""
-              }`}
+              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_name ? "border-red-500" : ""
+                }`}
             />
             {errors.tour_name && (
               <span className="text-red-500 text-sm mt-1">
@@ -242,9 +259,8 @@ export default function TourForm() {
               placeholder="กรอกรายละเอียดทัวร์"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-40 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
-                errors.tour_detail ? "border-red-500" : ""
-              }`}
+              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-40 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_detail ? "border-red-500" : ""
+                }`}
             />
             {errors.tour_detail && (
               <span className="text-red-500 text-sm mt-1">
@@ -276,30 +292,57 @@ export default function TourForm() {
           <div className="image-preview-grid flex gap-4 flex-wrap">
             {imageFiles.map((image, index) => (
               <div key={index} className="relative">
-              <Image
-                src={image.preview}
-                alt={`Uploaded preview ${index + 1}`}
-                width={80} // กำหนดขนาดที่คุณต้องการ
-                height={80} // กำหนดขนาดที่คุณต้องการ
-                className="object-cover rounded"
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveImage(index)}
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-              >
-                ×
-              </button>
-            </div>
+                <Image
+                  src={image.preview}
+                  alt={`Uploaded preview ${index + 1}`}
+                  width={80} // กำหนดขนาดที่คุณต้องการ
+                  height={80} // กำหนดขนาดที่คุณต้องการ
+                  className="object-cover rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(index)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                >
+                  ×
+                </button>
+              </div>
 
             ))}
           </div>
 
+          <div className="form-control">
+            <label className="label flex items-center gap-2">
+              <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
+              <span className="label-text font-semibold text-gray-700">
+                อัพโหลดไฟล์ PDF
+              </span>
+            </label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handlePdfUpload}
+              className="file-input file-input-bordered w-full text-black"
+            />
+          </div>
+
+          {pdfFile && (
+            <div className="mt-2">
+              <span className="text-gray-600">{pdfFile.name}</span>
+              <button
+                type="button"
+                onClick={() => setPdfFile(null)}
+                className="ml-2 text-red-500"
+              >
+                ลบ
+              </button>
+            </div>
+          )}
+
           <button
             type="submit"
-            className={`btn btn-primary w-full mt-4 ${
-              isSubmitting ? "btn-disabled loading" : ""
-            }`}
+            className={`btn btn-primary w-full mt-4 ${isSubmitting ? "btn-disabled loading" : ""
+              }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? "กำลังส่ง..." : "สร้างทัวร์"}

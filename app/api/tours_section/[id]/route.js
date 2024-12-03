@@ -41,35 +41,49 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
     try {
-        const { id } = params; // ดึง id จาก params
-        
-        if (!id) {
+        const { id } = params;
+
+        // ตรวจสอบว่า ID มีค่าและเป็นตัวเลข
+        if (!id || isNaN(id)) {
             return new Response(
-                JSON.stringify({ success: false, message: "ID is required" }),
+                JSON.stringify({ success: false, message: "Invalid ID provided" }),
                 { status: 400 }
             );
         }
 
+        // ลบข้อมูลจากฐานข้อมูล
         const [result] = await pool.execute(
             `DELETE FROM tour_section WHERE id = ?`,
             [id]
         );
 
+        // ตรวจสอบว่าเจอแถวที่ลบหรือไม่
         if (result.affectedRows === 0) {
             return new Response(
-                JSON.stringify({ success: false, message: "No tour section found with the provided ID" }),
+                JSON.stringify({
+                    success: false,
+                    message: `No tour section found with ID: ${id}`,
+                }),
                 { status: 404 }
             );
         }
 
+        // สำเร็จ
         return new Response(
-            JSON.stringify({ success: true, message: "Tour section deleted successfully" }),
+            JSON.stringify({
+                success: true,
+                message: "Tour section deleted successfully",
+            }),
             { status: 200 }
         );
     } catch (error) {
         console.error("Error deleting tour section:", error);
         return new Response(
-            JSON.stringify({ success: false, message: "Failed to delete tour section", error: error.message }),
+            JSON.stringify({
+                success: false,
+                message: "Failed to delete tour section",
+                error: error.message,
+            }),
             { status: 500 }
         );
     }
