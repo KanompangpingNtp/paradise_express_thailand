@@ -1,23 +1,45 @@
 import Herovideo from "./components/hero-video";
 import Animtion from "./components/animtion-section-two";
-import TourMonth from "./components/tour-month";
-import TourSightseeing from "./components/tour-sightseeing";
+import TourAll from "./components/tour-all";
 import TourAsia from "./components/tour-asia";
 import Transfer from "./components/transfer";
 import TourAsiaSE from "./components/tour-asiaSE";
-import Image from "next/image";
 
-const Home = () => {
+// ฟังก์ชันที่ทำการ fetch ข้อมูลจาก API
+async function getToursData() {
+  const response = await fetch("http://localhost:3000/api/tours/tours_data");
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const data = await response.json();
+  return data.tours || [];
+}
+
+const Home = async () => {
+  const tours = await getToursData(); // ดึงข้อมูลจาก API
+  console.log(tours);
+
+  // กรองข้อมูล tours ตาม section_name
+  const tourBySection = tours.reduce((acc, tour) => {
+    if (!acc[tour.section_name]) {
+      acc[tour.section_name] = [];
+    }
+    acc[tour.section_name].push(tour);
+    return acc;
+  }, {});
+
   return (
     <div>
       {/* Hero Section */}
       <section>
         <Herovideo />
       </section>
+
       {/* Animation Section */}
       <section>
         <Animtion />
       </section>
+
       {/* Tour Month & Tour Sightseeing Section */}
       <section
         className="flex-1 w-full h-auto bg-center bg-cover shadow-inner shadow-black"
@@ -28,11 +50,19 @@ const Home = () => {
       >
         <div className="flex flex-col justify-center items-center">
           <div className="container mx-auto py-10 text-white">
-            <TourMonth />
-            <TourSightseeing />
+            {/* แสดงผลแต่ละ section ตาม section_name */}
+            {Object.keys(tourBySection).map((sectionName, index) => (
+              <div key={index}>
+                <TourAll
+                  sectionName={sectionName}
+                  tours={tourBySection[sectionName]}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
       {/* Asia Tour Section */}
       <section>
         {/* แสดง TourAsiaSE สำหรับหน้าจอน้อยกว่า sm */}
@@ -40,12 +70,13 @@ const Home = () => {
           <TourAsiaSE />
         </div>
         {/* แสดง TourAsia สำหรับหน้าจอที่มีขนาดตั้งแต่ sm ขึ้นไป */}
-        <div className="hidden sm:block ">
+        <div className="hidden sm:block">
           <TourAsia />
         </div>
       </section>
-       {/* Transfer Section */}
-       {/* <section >
+
+      {/* Transfer Section */}
+      {/* <section >
         <Transfer />
       </section> */}
     </div>

@@ -8,6 +8,14 @@ import PersonCountButton from "@/app/components/PersonCountButton";
 import TabButton from "@/app/components/TabCard/TabButton";
 import TourOverview from "@/app/components/TabCard/TourOverview";
 import TourDeatilandCost from "@/app/components/TabCard/TourDeatilandCost";
+import ImageSlider from "@/app/components/ImageSlider";
+import {
+  BookOpenIcon,
+  CalendarIcon,
+  UserIcon,
+  PhoneIcon,
+  EnvelopeOpenIcon,
+} from "@heroicons/react/24/outline";
 
 const DetailTour = () => {
   const searchParams = useSearchParams(); // ใช้ useSearchParams เพื่อดึงข้อมูลจาก URL query
@@ -68,19 +76,13 @@ const DetailTour = () => {
 
   return (
     <div>
-      <Top title={card.title} />
+      <Top title={card.name} />
       <div className="w-full bg-white py-12">
         <div className="container mx-auto flex flex-col md:flex-row">
           {/* ฝั่งซ้าย (Image) */}
           <div className="w-full md:w-2/3 p-4">
             <div className="relative h-80">
-              <Image
-                src={card.image}
-                alt={card.title}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
-              />
+            <ImageSlider images={card.images} />
             </div>
             {/* กล่องข้อความใต้รูปภาพ */}
             <div className="mt-4 p-4 rounded-lg">
@@ -95,21 +97,30 @@ const DetailTour = () => {
                   isActive={activeTab === "TourDeatilandCost"}
                   onClick={() => handleTabClick("TourDeatilandCost")}
                 />
-
               </div>
 
-              {activeTab === "overview" && <TourOverview description={card.description} items={card.items} />}
-              {activeTab === "TourDeatilandCost" && <TourDeatilandCost/>}
+              {activeTab === "overview" && (
+                <TourOverview
+                  description={card.detail}
+                  items={card.highlights}
+                />
+              )}
+              {activeTab === "TourDeatilandCost" && (
+                <TourDeatilandCost pdf={card.pdf} />
+              )}
             </div>
           </div>
 
           {/* ฝั่งขวา (ข้อมูลทัวร์และฟอร์ม) */}
-          <div className="w-full md:w-1/3 p-4 flex flex-col">
-            <h1 className="text-3xl font-bold mb-2 text-gray-900 ">
-              {card.title}
+          <div className="w-full md:w-1/3 p-4 flex flex-col text-gray-700">
+            <h1 className="text-3xl font-bold mb-2 text-gray-700 ">
+              {card.name}
             </h1>
 
-            <form onSubmit={handleSubmit} className="space-y-4 pt-2 py-10 border-y">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 pt-2 py-10 border-y"
+            >
               {/* จัดเรียง input date และ PersonCountButton ไว้ข้างกัน */}
               <div className="flex gap-2 items-center">
                 <div className="flex-1">
@@ -119,6 +130,7 @@ const DetailTour = () => {
                     type="date"
                     value={tourDate}
                     onChange={(e) => setTourDate(e.target.value)} // ตั้งค่าตัวแปร tourDate
+                    icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
                   />
                 </div>
                 <div className="flex-1">
@@ -133,30 +145,36 @@ const DetailTour = () => {
                 id="fullName"
                 placeholder="Enter your full name"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)} // ตั้งค่าตัวแปร fullName
+                onChange={(e) => setFullName(e.target.value)}
+                icon={<UserIcon className="w-5 h-5 text-gray-500" />}
               />
+
               <InputField
                 label="Email"
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} // ตั้งค่าตัวแปร email
+                onChange={(e) => setEmail(e.target.value)}
+                icon={<EnvelopeOpenIcon className="w-5 h-5 text-gray-500" />}
               />
+
               <InputField
                 label="Phone Number"
                 id="phone"
                 type="tel"
                 placeholder="Enter your phone number"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)} // ตั้งค่าตัวแปร phone
+                onChange={(e) => setPhone(e.target.value)}
+                icon={<PhoneIcon className="w-5 h-5 text-gray-500" />}
               />
 
               <button
                 type="submit"
-                className="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 duration-300"
+                className="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 duration-300 flex items-center justify-center space-x-2"
               >
-                Book Now
+                <BookOpenIcon className="w-5 h-5" />
+                <span>Reserve Now</span>
               </button>
             </form>
           </div>

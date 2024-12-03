@@ -1,3 +1,5 @@
+import { DocumentTextIcon } from '@heroicons/react/24/outline';
+
 const TabButton = ({ label, isActive, onClick }) => (
   <button
     className={`px-6 py-3 text-base font-medium rounded-t-lg transition-colors duration-300 ${
@@ -7,6 +9,7 @@ const TabButton = ({ label, isActive, onClick }) => (
     }`}
     onClick={onClick}
   >
+    <DocumentTextIcon className="w-5 h-5 inline-block mr-2" />
     {label}
   </button>
 );
