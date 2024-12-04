@@ -9,8 +9,8 @@
 
 /* ฟอนต์ Regular */
 @font-face {
-  font-family: 'Montserrat-Regular';
-  src: url('/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-family: "Montserrat-Regular";
+  src: url("/fonts/Montserrat-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -18,16 +18,17 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Montserrat-Regular', sans-serif;
+  font-family: "Montserrat-Regular", sans-serif;
 }
 
 /* ใช้ฟอนต์ Regular สำหรับข้อความที่ต้องการ */
 .font-montserrat {
-  font-family: 'Montserrat-Regular', sans-serif;
+  font-family: "Montserrat-Regular", sans-serif;
 }
 
 /* CSS Reset แบบเรียบง่าย */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -46,4 +47,17 @@ html, body {
 .fade-in.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+.half-underline {
+  position: relative;
+}
+.half-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* Adjust based on your design */
+  width: 50%; /* 50% for half underline */
+  height: 2px; /* Adjust height if necessary */
+  background: currentColor;
 }

@@ -3,7 +3,6 @@ import Animtion from "./components/animtion-section-two";
 import TourAll from "./components/tour-all";
 import TourAsia from "./components/tour-asia";
 import Transfer from "./components/transfer";
-import TourAsiaSE from "./components/tour-asiaSE";
 
 // ฟังก์ชันที่ทำการ fetch ข้อมูลจาก API
 async function getToursData() {
@@ -17,7 +16,6 @@ async function getToursData() {
 
 const Home = async () => {
   const tours = await getToursData(); // ดึงข้อมูลจาก API
-  console.log(tours);
 
   // กรองข้อมูล tours ตาม section_name
   const tourBySection = tours.reduce((acc, tour) => {
@@ -52,7 +50,7 @@ const Home = async () => {
         }}
       >
         <div className="flex flex-col justify-center items-center">
-          <div className="container mx-auto py-10 text-white">
+          <div className="container mx-auto text-white">
             {/* แสดงผลแต่ละ section ตาม section_name แต่ไม่แสดง TourAsia */}
             {Object.keys(tourBySection).map(
               (sectionName, index) =>
@@ -72,7 +70,7 @@ const Home = async () => {
       {/* Asia Tour Section */}
       <section>
         {/* แสดง TourAll สำหรับหน้าจอน้อยกว่า sm */}
-        <div className="block container mx-auto bg-white sm:hidden">
+        <div className="block container mx-auto bg-white sm:hidden shadow-inner shadow-black">
           <TourAll
             sectionName="TourAsia"
             tours={tourAsiaData} // ส่งข้อมูลที่เกี่ยวข้องกับ TourAsia
@@ -89,9 +87,17 @@ const Home = async () => {
       </section>
 
       {/* Transfer Section */}
-      {/* <section >
-        <Transfer />
-      </section> */}
+      <section
+        className="flex-1 bg-center bg-cover shadow-inner shadow-black"
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom, rgba(240, 240, 240, 0.7), rgba(255, 255, 255, 0.5)), url('/images/TourMonth&Sightseeing/BGtour.jpg')",
+        }}
+      >
+          <div className="py-1 mx-auto text-white">
+            <Transfer />
+          </div>
+      </section>
     </div>
   );
 };

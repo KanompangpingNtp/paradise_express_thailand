@@ -90,9 +90,7 @@ const TourAsia = ({ tours }) => {
                   key={tour.tour_id}
                   className="w-full lg:w-1/2 xl:w-1/3 p-6 rounded-lg flex-shrink-0 text-black hover:text-orange-400 shadow-lg hover:shadow-yellow-500 transition-all duration-300"
                 >
-                  {console.log(
-                    tour.images.filter((image) => image.status === "1")
-                  )}
+
                   <div
                     className="bg-cover bg-center bg-no-repeat w-full h-[25rem] flex items-center justify-center"
                     style={{
@@ -150,9 +148,9 @@ const TourAsia = ({ tours }) => {
               query: { tours: JSON.stringify(tours) }, // ส่ง tours ใน query
             }}
             passHref
-            className="bg-gray-700 text-white py-3 px-5 w-full 2xl:w-40 hover:text-orange-500 hover:bg-gray-900 duration-200 rounded-2xl cursor-pointer"
+            className="text-gray-700 py-8 px-5 w-full hover:text-orange-500 hover:bg-gray-300 bg-opacity-60 duration-200 cursor-pointer uppercase tracking-normal hover:tracking-wider"
           >
-            VIEW ALL
+            VIEW ALL TOUR ASIA
           </Link>
         </div>
       </div>
