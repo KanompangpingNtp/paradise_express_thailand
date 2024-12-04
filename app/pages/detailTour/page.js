@@ -18,18 +18,23 @@ import {
 } from "@heroicons/react/24/outline";
 
 const DetailTour = () => {
-  const searchParams = useSearchParams(); // ใช้ useSearchParams เพื่อดึงข้อมูลจาก URL query
+  const searchParams = useSearchParams();
   const [card, setCard] = useState(null);
-  const [adults, setAdults] = useState(0); // จำนวนผู้ใหญ่
-  const [children, setChildren] = useState(0); // จำนวนเด็ก
-  const [totalPersons, setTotalPersons] = useState(0); // จำนวนคนทั้งหมด
-  const [tourDate, setTourDate] = useState(""); // วันที่ทัวร์
-  const [fullName, setFullName] = useState(""); // ชื่อเต็ม
-  const [email, setEmail] = useState(""); // อีเมล
-  const [phone, setPhone] = useState(""); // เบอร์โทร
+  const [adults, setAdults] = useState(0);
+  const [children, setChildren] = useState(0);
+  const [totalPersons, setTotalPersons] = useState(0);
+  const [tourDate, setTourDate] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [nameTour, setNameTour] = useState("");
   const [section_nameTour, setSection_NameTour] = useState("");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // เพิ่มตัวแปรนี้เพื่อตรวจสอบว่าได้ submit แล้วหรือยัง
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -37,17 +42,34 @@ const DetailTour = () => {
 
   // ฟังก์ชันเพื่ออัปเดตจำนวนคน
   const handlePersonCountChange = (count, adultsCount, childrenCount) => {
-    setTotalPersons(count); // อัพเดตจำนวนคนทั้งหมด
-    setAdults(adultsCount); // อัพเดตจำนวนผู้ใหญ่
-    setChildren(childrenCount); // อัพเดตจำนวนเด็ก
+    setTotalPersons(count);
+    setAdults(adultsCount);
+    setChildren(childrenCount);
   };
+
+  // เช็คว่าได้รับค่าครบถ้วนหรือยัง
+  useEffect(() => {
+    if (
+      fullName &&
+      email &&
+      phone &&
+      tourDate &&
+      totalPersons > 0 &&
+      adults >= 0 &&
+      children >= 0
+    ) {
+      setIsButtonDisabled(false);
+    } else {
+      setIsButtonDisabled(true);
+    }
+  }, [fullName, email, phone, tourDate, totalPersons, adults, children]);
 
   // ดึงข้อมูลจาก URL query
   useEffect(() => {
     const cardData = searchParams.get("card");
     if (cardData) {
       const parsedCard = JSON.parse(cardData);
-      setCard(parsedCard); // แปลงข้อมูลจาก query string และตั้งค่า card
+      setCard(parsedCard);
       if (parsedCard.name) {
         setNameTour(parsedCard.name);
       }
@@ -57,13 +79,11 @@ const DetailTour = () => {
     }
   }, [searchParams]);
 
-
-  console.log(card);
-
   // ฟังก์ชันเมื่อกด submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    setIsLoading(true);
+    setIsFormSubmitted(true); // ตั้งค่าให้ฟอร์มถูกซ่อนหลังจากการ submit
     const bookingData = {
       fullName,
       email,
@@ -72,49 +92,49 @@ const DetailTour = () => {
       totalPersons,
       adults,
       children,
-      nameTour: card.name, // เพิ่มชื่อทัวร์จาก card
-      section_nameTour: activeTab, // เพิ่มข้อมูลแท็บที่เลือก
+      nameTour: card.name,
+      section_nameTour: activeTab,
     };
-  
+
     try {
-      const response = await fetch('/api/send_email', {
-        method: 'POST',
+      const response = await fetch("/api/send_email", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          to: "enx1038@gmail.com", // อีเมลผู้รับ
+          to: "Akpailin@gmail.com",
           subject: "จองทัวร์ท่องเที่ยว",
-          text: `
-            Booking Details:
+          text: `Booking Details:
             Full Name: ${bookingData.fullName}
             Email: ${bookingData.email}
             Phone: ${bookingData.phone}
+            Section: ${bookingData.section_nameTour}
+            Tour Name: ${bookingData.nameTour}
             Tour Date: ${bookingData.tourDate}
             Total Persons: ${bookingData.totalPersons}
             Adults: ${bookingData.adults}
-            Children: ${bookingData.children}
-            Tour Name: ${bookingData.nameTour}
-            Section: ${bookingData.section_nameTour}
-          `,
+            Children: ${bookingData.children}`,
         }),
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to send email');
+        throw new Error("Failed to send email");
       }
-  
-      const result = await response.json();
-      console.log('Email sent successfully:', result);
-      alert('Booking confirmed! Email has been sent.');
+
+      setFeedbackMessage("Your booking has been confirmed. Please await further contact.");
+      setMessageType("success");
     } catch (error) {
-      console.error('Error sending email:', error);
-      alert('Failed to send booking email. Please try again.');
+      setFeedbackMessage(`Failed to send. Please contact support for assistance.
+        Telephone: 098-459-6582 (Within Thailand)
+        Oversea Call: +66 98-459-6582
+        WhatsApp: 098-459-6582`);
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
-  // กรณีที่ยังไม่ได้รับข้อมูล card
   if (!card) {
     return <div>Loading...</div>;
   }
@@ -129,7 +149,6 @@ const DetailTour = () => {
             <div className="relative h-[60vh] border">
               <ImageSlider images={card.images} />
             </div>
-            {/* กล่องข้อความใต้รูปภาพ */}
             <div className="mt-4 p-4 rounded-lg">
               <div className="flex space-x-2 mb-8">
                 <TabButton
@@ -143,7 +162,6 @@ const DetailTour = () => {
                   onClick={() => handleTabClick("TourDeatilandCost")}
                 />
               </div>
-
               {activeTab === "overview" && (
                 <TourOverview
                   description={card.detail}
@@ -158,70 +176,113 @@ const DetailTour = () => {
 
           {/* ฝั่งขวา (ข้อมูลทัวร์และฟอร์ม) */}
           <div className="w-full md:w-1/3 p-4 flex flex-col text-gray-700">
-            <h1 className="text-3xl font-bold mb-2 text-gray-700 ">
+            <h1 className="text-3xl font-bold mb-2 text-gray-700">
               {card.name}
             </h1>
 
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-4 pt-2 py-10 border-y"
-            >
-              {/* จัดเรียง input date และ PersonCountButton ไว้ข้างกัน */}
-              <div className="flex gap-2 items-center">
-                <div className="flex-1">
-                  <InputField
-                    label="Tour Date"
-                    id="tourDate"
-                    type="date"
-                    value={tourDate}
-                    onChange={(e) => setTourDate(e.target.value)} // ตั้งค่าตัวแปร tourDate
-                    icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
-                  />
-                </div>
-                <div className="flex-1">
-                  <PersonCountButton
-                    label="Number of People"
-                    onCountChange={handlePersonCountChange} // ส่งข้อมูลจำนวนคน
-                  />
-                </div>
+            {/* แสดงฟอร์ม หรือ Loading */}
+            {isFormSubmitted ? (
+              <div className="text-center text-lg font-semibold text-gray-700 py-10 border-y">
+                {isLoading ? (
+                  <div className="flex justify-center items-center space-x-2">
+                    <svg
+                      className="w-6 h-6 animate-spin text-orange-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 0116 0"
+                      ></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  <div
+                    className={`p-4 rounded-md max-w-xl mx-auto mt-4 ${
+                      messageType === "success"
+                        ? "text-green-500 border-green-700"
+                        : "text-red-500 border-red-700"
+                    }`}
+                  >
+                    <p>{feedbackMessage}</p>
+                  </div>
+                )}
               </div>
-              <InputField
-                label="Full Name"
-                id="fullName"
-                placeholder="Enter your full name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                icon={<UserIcon className="w-5 h-5 text-gray-500" />}
-              />
-
-              <InputField
-                label="Email"
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                icon={<EnvelopeOpenIcon className="w-5 h-5 text-gray-500" />}
-              />
-
-              <InputField
-                label="Phone Number"
-                id="phone"
-                type="tel"
-                placeholder="Enter your phone number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                icon={<PhoneIcon className="w-5 h-5 text-gray-500" />}
-              />
-
-              <button
-                type="submit"
-                className="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 duration-300 flex items-center justify-center space-x-2"
+            ) : (
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4 pt-2 py-10 border-y"
               >
-                <BookOpenIcon className="w-5 h-5" />
-                <span>Reserve Now</span>
-              </button>
-            </form>
+                <div className="flex gap-2 items-center">
+                  <div className="flex-1">
+                    <InputField
+                      label="Tour Date"
+                      id="tourDate"
+                      type="date"
+                      value={tourDate}
+                      onChange={(e) => setTourDate(e.target.value)}
+                      icon={<CalendarIcon className="w-5 h-5 text-gray-500" />}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <PersonCountButton
+                      label="Number of People"
+                      onCountChange={handlePersonCountChange}
+                    />
+                  </div>
+                </div>
+                <InputField
+                  label="Full Name"
+                  id="fullName"
+                  placeholder="Enter your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  icon={<UserIcon className="w-5 h-5 text-gray-500" />}
+                />
+                <InputField
+                  label="Email"
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  icon={<EnvelopeOpenIcon className="w-5 h-5 text-gray-500" />}
+                />
+                <InputField
+                  label="Phone Number"
+                  id="phone"
+                  type="tel"
+                  placeholder="Enter your phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  icon={<PhoneIcon className="w-5 h-5 text-gray-500" />}
+                />
+                <button
+                  type="submit"
+                  disabled={isButtonDisabled}
+                  className={`w-full ${
+                    isButtonDisabled
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-orange-500"
+                  } text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 duration-300 flex items-center justify-center space-x-2`}
+                >
+                  <BookOpenIcon className="w-5 h-5" />
+                  <span>Reserve Now</span>
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>

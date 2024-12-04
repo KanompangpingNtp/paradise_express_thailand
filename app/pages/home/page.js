@@ -28,6 +28,9 @@ const Home = async () => {
     return acc;
   }, {});
 
+  // กรองข้อมูลสำหรับ TourAsia เท่านั้น
+  const tourAsiaData = tourBySection["TourAsia"] || [];
+
   return (
     <div>
       {/* Hero Section */}
@@ -50,28 +53,38 @@ const Home = async () => {
       >
         <div className="flex flex-col justify-center items-center">
           <div className="container mx-auto py-10 text-white">
-            {/* แสดงผลแต่ละ section ตาม section_name */}
-            {Object.keys(tourBySection).map((sectionName, index) => (
-              <div key={index}>
-                <TourAll
-                  sectionName={sectionName}
-                  tours={tourBySection[sectionName]}
-                />
-              </div>
-            ))}
+            {/* แสดงผลแต่ละ section ตาม section_name แต่ไม่แสดง TourAsia */}
+            {Object.keys(tourBySection).map(
+              (sectionName, index) =>
+                sectionName !== "TourAsia" && (
+                  <div key={index}>
+                    <TourAll
+                      sectionName={sectionName}
+                      tours={tourBySection[sectionName]}
+                    />
+                  </div>
+                )
+            )}
           </div>
         </div>
       </section>
 
       {/* Asia Tour Section */}
       <section>
-        {/* แสดง TourAsiaSE สำหรับหน้าจอน้อยกว่า sm */}
+        {/* แสดง TourAll สำหรับหน้าจอน้อยกว่า sm */}
         <div className="block container mx-auto bg-white sm:hidden">
-          <TourAsiaSE />
+          <TourAll
+            sectionName="TourAsia"
+            tours={tourAsiaData} // ส่งข้อมูลที่เกี่ยวข้องกับ TourAsia
+          />
         </div>
+
         {/* แสดง TourAsia สำหรับหน้าจอที่มีขนาดตั้งแต่ sm ขึ้นไป */}
         <div className="hidden sm:block">
-          <TourAsia />
+          <TourAsia
+            sectionName="TourAsia"
+            tours={tourAsiaData} // ส่งข้อมูลที่เกี่ยวข้องกับ TourAsia
+          />
         </div>
       </section>
 

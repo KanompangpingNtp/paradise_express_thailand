@@ -38,10 +38,11 @@ const AllTour = () => {
 
     setFilteredData(filtered);
   };
-
+  // ตรวจสอบว่า tourData มีข้อมูลหรือไม่ แล้วดึงค่า section_name จาก tourData[0]
+  const sectionName = tourData.length > 0 ? tourData[0].section_name : "All Tours";
   return (
     <div>
-      <Top title="All Tours" />
+      <Top title={sectionName} />
       <div className="w-full bg-white py-12">
         <div className="container mx-auto">
           <SearchBar
