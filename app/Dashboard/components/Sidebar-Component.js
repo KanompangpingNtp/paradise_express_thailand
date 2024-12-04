@@ -8,6 +8,9 @@ import {
   UsersIcon,
   CogIcon,
   XMarkIcon,
+  SwatchIcon,
+  DocumentPlusIcon,
+  ClipboardDocumentListIcon
 } from "@heroicons/react/24/outline";
 
 // Sidebar Component
@@ -51,13 +54,14 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, activeMenu, setActiveMenu })
         <ul>
           {[
             { icon: HomeIcon, label: "Dashboard", href: "/Dashboard" },
+            { icon: SwatchIcon, label: "Tours section", href: "/Dashboard/tour_section_manage" },
             {
-              icon: ChartPieIcon,
-              label: "Create Tours",
+              icon: DocumentPlusIcon,
+              label: "Tours create",
               href: "/Dashboard/create_tour",
             },
-            { icon: UsersIcon, label: "Team", href: "/team" },
-            { icon: CogIcon, label: "Settings", href: "/settings" },
+
+            { icon: ClipboardDocumentListIcon, label: "Tours lists", href: "/Dashboard/show_tour_list" },
           ].map(({ icon: Icon, label, href }) => (
             <li key={label}>
               <Link
