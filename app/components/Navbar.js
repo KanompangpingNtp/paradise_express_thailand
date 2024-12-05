@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -13,45 +14,6 @@ import {
   TruckIcon,
   SwatchIcon,
 } from "@heroicons/react/24/outline";
-
-const styles = {
-  nav: {
-    base: "fixed top-0 left-0 w-full bg-black text-white transition-transform duration-300 opacity-80 z-40 hidden lg:block",
-    hidden: "-translate-y-full",
-    visible: "translate-y-0",
-  },
-  container:
-    "container mx-auto px-4 flex justify-between items-center h-20 text-xl lg:text-lg",
-  logo: "text-lg font-bold cursor-pointer h-auto w-auto",
-  menuWrapper: "flex gap-6 justify-center flex-grow",
-  menu: "flex gap-6",
-  link: "transition-colors duration-300 mx-4",
-  linkHover: "hover:text-orange-400",
-  linkActive: "text-orange-400",
-  loginLink: "ml-auto",
-  bottomNavWrapper:
-    "fixed bottom-0 left-0 right-0 bg-black shadow-lg opacity-80 z-50 lg:hidden",
-  bottomNavContainer: "flex justify-around items-center h-16",
-  bottomNavItem:
-    "flex flex-col items-center justify-center text-gray-200 hover:text-orange-400 transition-colors duration-200 text-xs",
-  dropdown: "dropdown dropdown-end",
-  dropdownMenu: "menu menu-compact p-2 shadow bg-white rounded-box w-52",
-  dropdownItem:
-    "text-gray-200 hover:text-orange-400 transition-colors duration-200",
-};
-
-const menuItems = [
-  {
-    href: "/pages/tour-packages",
-    label: "Tour Packages",
-    icon: ShoppingBagIcon,
-  },
-  { href: "/pages/sightseeing", label: "Sightseeing", icon: HeartIcon },
-  { href: "/pages/transfer", label: "Transfer", icon: TruckIcon },
-  { href: "/pages/customized", label: "Customized", icon: SwatchIcon },
-  { href: "#footer", label: "Contact", icon: PhoneIcon },
-  { href: "/", label: "Login", icon: UserIcon },
-];
 
 const Navbar = () => {
   const [show, setShow] = useState(true);
@@ -77,6 +39,41 @@ const Navbar = () => {
   }, [handleScroll]);
 
   const currentPath = window.location.pathname;
+
+  const menuItems = [
+    { href: "/pages/allTour/tour-month", label: "Tour Packages", icon: ShoppingBagIcon },
+    { href: "/pages/allTour/tour-sightseeing", label: "Sightseeing", icon: HeartIcon },
+    { href: "/pages/transfer", label: "Transfer", icon: TruckIcon },
+    { href: "/pages/customized", label: "Customized", icon: SwatchIcon },
+    { href: "#footer", label: "Contact", icon: PhoneIcon },
+    { href: "/", label: "Login", icon: UserIcon },
+  ];
+
+  const styles = {
+    nav: {
+      base: "fixed top-0 left-0 w-full bg-black text-white transition-transform duration-300 opacity-80 z-40 hidden lg:block",
+      hidden: "-translate-y-full",
+      visible: "translate-y-0",
+    },
+    container:
+      "container mx-auto px-4 flex justify-between items-center h-20 text-xl lg:text-lg",
+    logo: "text-lg font-bold cursor-pointer h-auto w-auto",
+    menuWrapper: "flex gap-6 justify-center flex-grow",
+    menu: "flex gap-6",
+    link: "transition-colors duration-300 mx-4",
+    linkHover: "hover:text-orange-400",
+    linkActive: "text-orange-400",
+    loginLink: "ml-auto",
+    bottomNavWrapper:
+      "fixed bottom-0 left-0 right-0 bg-black shadow-lg opacity-80 z-50 lg:hidden",
+    bottomNavContainer: "flex justify-around items-center h-16",
+    bottomNavItem:
+      "flex flex-col items-center justify-center text-gray-200 hover:text-orange-400 transition-colors duration-200 text-xs",
+    dropdown: "dropdown dropdown-end",
+    dropdownMenu: "menu menu-compact p-2 shadow bg-white rounded-box w-52",
+    dropdownItem:
+      "text-gray-200 hover:text-orange-400 transition-colors duration-200",
+  };
 
   return (
     <>

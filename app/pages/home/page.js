@@ -43,6 +43,7 @@ const Home = async () => {
 
       {/* Tour Month & Tour Sightseeing Section */}
       <section
+        id="tour-packages"
         className="flex-1 w-full h-auto bg-center bg-cover shadow-inner shadow-black"
         style={{
           backgroundImage:
@@ -94,9 +95,9 @@ const Home = async () => {
             "linear-gradient(to bottom, rgba(240, 240, 240, 0.7), rgba(255, 255, 255, 0.5)), url('/images/TourMonth&Sightseeing/BGtour.jpg')",
         }}
       >
-          <div className="py-1 mx-auto text-white">
-            <Transfer />
-          </div>
+        <div className="py-1 mx-auto text-white">
+          <Transfer />
+        </div>
       </section>
     </div>
   );
