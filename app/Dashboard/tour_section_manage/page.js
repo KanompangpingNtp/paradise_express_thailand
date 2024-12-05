@@ -185,25 +185,35 @@ export default function TourSectionManage() {
               </div>
 
               <p className="text-sm text-gray-700">
-                Number of Tours: <span className="text-lg text-sky-400 font-bold">{section.tour_count}</span>
+                Number of Tours:{" "}
+                <span className="text-lg text-sky-400 font-bold">
+                  {section.tour_count}
+                </span>
               </p>
               <div className="flex justify-end mt-4 space-x-2">
-                <button
-                  onClick={() =>
-                    handleEdit(section.id, section.tour_section_name)
-                  }
-                  className="bg-yellow-400 text-white px-3 py-2 rounded-md hover:bg-yellow-500 flex items-center duration-300"
-                >
-                  <PencilSquareIcon className="w-5 h-5 mr-2" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(section.id)}
-                  className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center duration-300"
-                >
-                  <TrashIcon className="w-5 h-5 mr-2" />
-                  Delete
-                </button>
+                {/* แสดงปุ่ม Edit และ Delete เฉพาะถ้า tour_section_name ไม่ใช่ "Tour Asia", "Tour Month", หรือ "Sightseeing" */}
+                {section.tour_section_name !== "Tour Asia" &&
+                  section.tour_section_name !== "Tour Month" &&
+                  section.tour_section_name !== "Sightseeing" && (
+                    <>
+                      <button
+                        onClick={() =>
+                          handleEdit(section.id, section.tour_section_name)
+                        }
+                        className="bg-yellow-400 text-white px-3 py-2 rounded-md hover:bg-yellow-500 flex items-center duration-300"
+                      >
+                        <PencilSquareIcon className="w-5 h-5 mr-2" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(section.id)}
+                        className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center duration-300"
+                      >
+                        <TrashIcon className="w-5 h-5 mr-2" />
+                        Delete
+                      </button>
+                    </>
+                  )}
                 <button
                   onClick={() => handleViewDetails(section.tour_section_name)}
                   className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 flex items-center duration-300"

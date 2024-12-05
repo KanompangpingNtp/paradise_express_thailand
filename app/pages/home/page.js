@@ -27,7 +27,7 @@ const Home = async () => {
   }, {});
 
   // กรองข้อมูลสำหรับ TourAsia เท่านั้น
-  const tourAsiaData = tourBySection["TourAsia"] || [];
+  const tourAsiaData = tourBySection["Tour Asia"] || [];
 
   return (
     <div>
@@ -50,12 +50,12 @@ const Home = async () => {
             "linear-gradient(to bottom, rgba(240, 240, 240, 0.7), rgba(255, 255, 255, 0.5)), url('/images/TourMonth&Sightseeing/BGtour.jpg')",
         }}
       >
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center pt-20">
           <div className="container mx-auto text-white">
             {/* แสดงผลแต่ละ section ตาม section_name แต่ไม่แสดง TourAsia */}
             {Object.keys(tourBySection).map(
               (sectionName, index) =>
-                sectionName !== "TourAsia" && (
+                sectionName !== "Tour Asia" && (
                   <div key={index}>
                     <TourAll
                       sectionName={sectionName}
@@ -81,7 +81,7 @@ const Home = async () => {
         {/* แสดง TourAsia สำหรับหน้าจอที่มีขนาดตั้งแต่ sm ขึ้นไป */}
         <div className="hidden sm:block">
           <TourAsia
-            sectionName="TourAsia"
+            sectionName="Tour Asia"
             tours={tourAsiaData} // ส่งข้อมูลที่เกี่ยวข้องกับ TourAsia
           />
         </div>
