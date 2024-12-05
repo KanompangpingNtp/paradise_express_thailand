@@ -8,7 +8,8 @@ import {
   PhotoIcon,
   MapPinIcon,
   ClipboardDocumentListIcon,
-  PlusCircleIcon
+  PlusCircleIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import { Dialog } from "@headlessui/react";
@@ -25,6 +26,7 @@ export default function ShowTourList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ highlights: [], images: [] });
   const [isModalOpenForm, setIsModalOpenForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // ฟังก์ชันสำหรับดึงข้อมูล Tours
   const fetchTours = async () => {
@@ -127,9 +129,17 @@ export default function ShowTourList() {
 
   if (loading) return <Loading />;
 
-  const filteredTours = tours.filter(
-    (tour) => tour.section_name === decodedTourSectionName
-  );
+  const filteredTours = tours.filter((tour, index) => {
+    const lowercasedSearchTerm = searchTerm.toLowerCase();
+    return (
+      (tour.name.toLowerCase().includes(lowercasedSearchTerm) || // ค้นหาจากชื่อทัวร์
+        index.toString().includes(lowercasedSearchTerm) || // ค้นหาจากเลข index
+        tour.highlights.some(
+          (highlight) => highlight.toLowerCase().includes(lowercasedSearchTerm) // ค้นหาจาก highlight
+        )) &&
+      tour.section_name === decodedTourSectionName // คำนึงถึง section_name ด้วย
+    );
+  });
 
   return (
     <div>
@@ -140,9 +150,21 @@ export default function ShowTourList() {
       </div>
 
       {/* ปุ่มเพื่อเปิด Modal */}
-      <div  className="w-full flex justify-center lg:justify-end my-6">
+      <div className="w-full flex flex-col lg:flex-row justify-center lg:justify-between my-6 gap-4 lg:gap-6">
+        <div className="relative w-full lg:w-auto">
+          <input
+            type="text"
+            placeholder="Search by Name or Highlight..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 pl-10 rounded-md bg-white text-black border border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          />
+          <div className="absolute left-3 top-1/2 transform -translate-y-4">
+            <MagnifyingGlassIcon className="w-6 h-6 text-sky-500" />
+          </div>
+        </div>
         <button
-        onClick={openModalForm}
+          onClick={openModalForm}
           className="w-full lg:w-auto bg-sky-400 text-white px-6 py-3 rounded-md flex items-center justify-center gap-3 hover:bg-sky-600 transition-all duration-300"
         >
           <PlusCircleIcon className="w-6 h-6" />
@@ -247,7 +269,10 @@ export default function ShowTourList() {
               >
                 <XMarkIcon className="w-6 h-6" />
               </button>
-              <TourForm onSubmit={handleFormSubmit} section={decodedTourSectionName}/>
+              <TourForm
+                onSubmit={handleFormSubmit}
+                section={decodedTourSectionName}
+              />
             </div>
           </div>
         </Dialog>
