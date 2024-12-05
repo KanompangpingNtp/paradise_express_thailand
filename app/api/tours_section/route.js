@@ -2,7 +2,21 @@ import { pool } from "@/lib/db";
 
 export async function GET() {
     try {
-        const [rows] = await pool.execute("SELECT * FROM tour_section");
+        // ใช้ LEFT JOIN เพื่อดึง tour_section ทั้งหมด และรวมจำนวน tour ที่เกี่ยวข้อง
+        const [rows] = await pool.execute(`
+            SELECT
+                ts.id,
+                ts.tour_section_name,
+                COUNT(t.id) AS tour_count
+            FROM
+                tour_section ts
+            LEFT JOIN
+                tour t
+            ON
+                ts.id = t.tour_section_id
+            GROUP BY
+                ts.id, ts.tour_section_name
+        `);
 
         if (rows.length === 0) {
             return new Response(
@@ -12,7 +26,7 @@ export async function GET() {
         }
 
         return new Response(
-            JSON.stringify({ success: true, data: rows }), 
+            JSON.stringify({ success: true, data: rows }),
             { status: 200 }
         );
     } catch (error) {
@@ -23,6 +37,7 @@ export async function GET() {
         );
     }
 }
+
 
 export async function POST(req) {
     try {

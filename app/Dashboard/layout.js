@@ -1,5 +1,5 @@
 // layout.js
-"use client"
+"use client";
 import React, { useState } from "react";
 import CloudBackground from "./components/CloudBackground-Component";
 import Sidebar from "./components/Sidebar-Component";
@@ -27,7 +27,11 @@ const Layout = ({ children }) => {
         {/* Navbar */}
         <Navbar setIsSidebarOpen={setIsSidebarOpen} />
         {/* Page Content */}
-        {children}
+        <div className="min-h-screen bg-gradient-to-br from-sky-50 to-sky-100 p-6">
+          <div className="bg-white p-6 rounded-lg shadow-md backdrop-blur-xl bg-white/60 container mx-auto min-h-screen">
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   );
