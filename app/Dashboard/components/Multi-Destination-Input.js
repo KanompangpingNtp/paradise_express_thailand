@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { XMarkIcon, PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  XMarkIcon,
+  PlusCircleIcon,
+  MapPinIcon,
+} from "@heroicons/react/24/solid";
 
 const MultiDestinationInput = ({
   onDestinationsChange,
   destinations = [], // รับ destinations จาก prop
-  placeholder = "มีไรเด่นบ้างอะพี่",
+  placeholder = "Specify the tour hightlights",
   maxDestinations = 10,
-  className = '',
+  className = "",
 }) => {
-  const [currentDestination, setCurrentDestination] = useState('');
+  const [currentDestination, setCurrentDestination] = useState("");
   const inputRef = useRef(null);
 
   const handleAddDestination = () => {
@@ -21,7 +25,7 @@ const MultiDestinationInput = ({
       destinations.length < maxDestinations
     ) {
       onDestinationsChange([...destinations, trimmedDestination]); // ส่งค่ากลับไปที่ TourForm
-      setCurrentDestination(''); // ล้าง input field
+      setCurrentDestination(""); // ล้าง input field
       if (inputRef.current) {
         inputRef.current.focus();
       }
@@ -29,22 +33,27 @@ const MultiDestinationInput = ({
   };
 
   const handleRemoveDestination = (destinationToRemove) => {
-    onDestinationsChange(destinations.filter(dest => dest !== destinationToRemove)); // ส่งค่ากลับไปที่ TourForm
+    onDestinationsChange(
+      destinations.filter((dest) => dest !== destinationToRemove)
+    ); // ส่งค่ากลับไปที่ TourForm
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleAddDestination();
     }
   };
 
   return (
-    <div className={`max-w-md mx-auto bg-white rounded-3xl space-y-4 ${className}`}>
+    <div className={`mx-auto bg-white space-y-4 ${className}`}>
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MapPinIcon className="w-5 h-5 text-gray-400" />
-        </div>
+        <label className="label flex items-center">
+          <MapPinIcon className="w-5 h-5 text-sky-400" />
+          <span className="label-text font-semibold text-sky-600 uppercase">
+            tour hightlights
+          </span>
+        </label>
         <div className="flex">
           <input
             ref={inputRef}
@@ -53,20 +62,20 @@ const MultiDestinationInput = ({
             onChange={(e) => setCurrentDestination(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={placeholder}
-            className="pl-10 pr-16 py-3 w-full border-2 border-blue-500 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
+            className="pl-4 pr-16 py-3 w-full bg-gray-200 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
             disabled={destinations.length >= maxDestinations}
           />
           <button
             type="button"
             onClick={handleAddDestination}
             disabled={destinations.length >= maxDestinations}
-            className="absolute right-1 top-1/2 -translate-y-1/2 transform"
+            className="absolute right-1 top-1/2 -translate-y-1 transform"
           >
             <PlusCircleIcon
               className={`${
                 destinations.length >= maxDestinations
-                  ? 'text-gray-300'
-                  : 'text-blue-500 hover:text-blue-600'
+                  ? "text-gray-300"
+                  : "text-blue-500 hover:text-blue-600"
               } transition-colors duration-300 w-11 h-11`}
             />
           </button>
@@ -91,7 +100,7 @@ const MultiDestinationInput = ({
                 onClick={() => handleRemoveDestination(destination)}
                 className="text-blue-500 hover:text-blue-700 rounded-full hover:bg-blue-100 p-1 transition-all duration-300"
               >
-                <XMarkIcon className='w-5 h-5' />
+                <XMarkIcon className="w-5 h-5" />
               </button>
             </div>
           ))}

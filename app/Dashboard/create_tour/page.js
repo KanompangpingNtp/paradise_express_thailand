@@ -3,9 +3,10 @@ import React, { useState, useCallback, useEffect } from "react"; // เพิ่
 import MultiDestinationInput from "../components/Multi-Destination-Input";
 import Image from "next/image";
 import {
-  CameraIcon,
+  SwatchIcon,
+  TagIcon,
   MapPinIcon,
-  StarIcon,
+  DocumentTextIcon,
   CloudArrowUpIcon,
 } from "@heroicons/react/24/solid";
 
@@ -32,7 +33,7 @@ export default function TourForm() {
           const data = await response.json();
           setTourSections(data); // เก็บข้อมูลใน state
         } else {
-          console.error("Failed to fetch tour sections.");
+          console.log("Failed to fetch tour sections.");
         }
       } catch (error) {
         console.error("Error fetching tour sections:", error);
@@ -61,7 +62,7 @@ export default function TourForm() {
     const maxSize = 2 * 1024 * 1024; // 2MB
     const files = Array.from(e.target.files).filter((file) => {
       if (file.size > maxSize) {
-        alert(`ไฟล์ ${file.name} มีขนาดเกิน ${maxSize / (1024 * 1024)} MB`);
+        alert(`File ${file.name} has more than size ${maxSize / (1024 * 1024)} MB`);
         return false;
       }
       return true;
@@ -88,15 +89,15 @@ export default function TourForm() {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.tour_section_name)
-      newErrors.tour_section_name = "กรุณาระบุหัวข้อทัวร์";
-    if (!formData.tour_name) newErrors.tour_name = "กรุณาระบุชื่อทัวร์";
+      newErrors.tour_section_name = "Please specify the tour title.";
+    if (!formData.tour_name) newErrors.tour_name = "Please specify the tour name.";
     if (!formData.tour_detail)
-      newErrors.tour_detail = "กรุณาระบุรายละเอียดทัวร์";
+      newErrors.tour_detail = "Please specify the tour details.";
     if (
       !formData.tour_highlights_detail ||
       formData.tour_highlights_detail.length === 0
     ) {
-      newErrors.tour_highlights_detail = "กรุณาเพิ่มสถานที่ท่องเที่ยว";
+      newErrors.tour_highlights_detail = "Please specify the tour highlights.";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -107,7 +108,7 @@ export default function TourForm() {
     if (file) {
       const isPdf = file.type === "application/pdf";
       if (!isPdf) {
-        alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
+        alert("Please select PDF files only.");
         return;
       }
       setPdfFile(file);
@@ -171,45 +172,44 @@ export default function TourForm() {
           tour_highlights_detail: [],
         });
         setImageFiles([]);
-        setPdfFile(null);  // ล้างไฟล์ PDF หลังจากส่งข้อมูล
+        setPdfFile(null); // ล้างไฟล์ PDF หลังจากส่งข้อมูล
       } else {
         const errorData = await response.json();
-        alert(`เกิดข้อผิดพลาด: ${errorData.message || response.statusText}`);
+        alert(`Errors: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+      alert("Unable to submit data. Please try again.");
     } finally {
       setIsSubmitting(false); // เสร็จสิ้นการส่งข้อมูล
     }
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-sky-500 to-teal-400 p-6 text-white">
-          <h2 className="text-3xl font-bold flex items-center justify-center gap-3">
-            <MapPinIcon className="w-8 h-8" />
-            สร้างทัวร์ใหม่
-          </h2>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+    <div className="bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center p-4">
+      <div className="w-full min-h-screen bg-white rounded-2xl shadow-2xl overflow-hidden p-6">
+        <h2 className="text-3xl text-sky-600 font-bold flex items-center justify-center">
+          <MapPinIcon className="w-8 h-8 text-sky-400" />
+          Create new tour
+        </h2>
+        <form onSubmit={handleSubmit} className="">
           <div className="form-control">
             <label className="label flex items-center gap-2">
-              <span className="label-text font-semibold text-gray-700">
-                หัวข้อทัวร์
+            <SwatchIcon className="w-5 h-5 text-sky-400" />
+              <span className="label-text text-sky-600 font-semibold uppercase">
+                Tour Title
               </span>
             </label>
             <select
               name="tour_section_name"
               value={formData.tour_section_name}
               onChange={handleInputChange}
-              className={`input input-bordered bg-gray-200 text-black w-full border-2 ${errors.tour_section_name ? "border-red-500" : ""
-                }`}
+              className={`input input-bordered bg-gray-200 text-black border-blue-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 w-full border-2 ${
+                errors.tour_section_name ? "border-red-500" : ""
+              }`}
             >
-              <option value="" disabled>
-                กรุณาเลือกหัวข้อทัวร์
+              <option value="" disabled hidden>
+                Please select the tour title
               </option>
               {tourSections.map((section) => (
                 <option key={section.id} value={section.id}>
@@ -226,19 +226,20 @@ export default function TourForm() {
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
-              <MapPinIcon className="w-5 h-5 text-sky-600" />
-              <span className="label-text font-semibold text-gray-700">
-                ชื่อทัวร์
+              <TagIcon className="w-5 h-5 text-sky-400" />
+              <span className="label-text font-semibold text-sky-600 uppercase">
+                tour name
               </span>
             </label>
             <input
               type="text"
               name="tour_name"
-              placeholder="ระบุชื่อทัวร์"
+              placeholder="Specify the tour name"
               value={formData.tour_name}
               onChange={handleInputChange}
-              className={`input input-bordered bg-gray-200 text-black w-full border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_name ? "border-red-500" : ""
-                }`}
+              className={`input input-bordered bg-gray-200 text-black w-full border-2 border-blue-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
+                errors.tour_name ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_name && (
               <span className="text-red-500 text-sm mt-1">
@@ -249,18 +250,19 @@ export default function TourForm() {
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
-              <StarIcon className="w-5 h-5 text-sky-600" />
-              <span className="label-text font-semibold text-gray-700">
-                รายละเอียดทัวร์
+              <DocumentTextIcon className="w-5 h-5 text-sky-400" />
+              <span className="label-text font-semibold text-sky-600 uppercase">
+              Tour Details
               </span>
             </label>
             <textarea
               name="tour_detail"
-              placeholder="กรอกรายละเอียดทัวร์"
+              placeholder="Specify the tour details"
               value={formData.tour_detail}
               onChange={handleInputChange}
-              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-40 border-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${errors.tour_detail ? "border-red-500" : ""
-                }`}
+              className={`textarea textarea-bordered bg-gray-200 text-black w-full h-36 border-2 border-blue-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 ${
+                errors.tour_detail ? "border-red-500" : ""
+              }`}
             />
             {errors.tour_detail && (
               <span className="text-red-500 text-sm mt-1">
@@ -276,16 +278,16 @@ export default function TourForm() {
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
-              <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
-              <span className="label-text font-semibold text-gray-700">
-                อัพโหลดรูปภาพ
+              <CloudArrowUpIcon className="w-5 h-5 text-sky-400" />
+              <span className="label-text font-semibold text-sky-600 uppercase">
+                upload images
               </span>
             </label>
             <input
               type="file"
               multiple
               onChange={handleImageUpload}
-              className="file-input file-input-bordered w-full text-black"
+              className="file-input file-input-bordered bg-gray-200 text-black w-full border-2 border-blue-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
             />
           </div>
 
@@ -307,22 +309,21 @@ export default function TourForm() {
                   ×
                 </button>
               </div>
-
             ))}
           </div>
 
           <div className="form-control">
             <label className="label flex items-center gap-2">
-              <CloudArrowUpIcon className="w-5 h-5 text-sky-600" />
-              <span className="label-text font-semibold text-gray-700">
-                อัพโหลดไฟล์ PDF
+              <CloudArrowUpIcon className="w-5 h-5 text-sky-400" />
+              <span className="label-text font-semibold text-sky-600 uppercase">
+                upload file PDF
               </span>
             </label>
             <input
               type="file"
               accept="application/pdf"
               onChange={handlePdfUpload}
-              className="file-input file-input-bordered w-full text-black"
+              className="file-input file-input-bordered bg-gray-200 text-black w-full border-2 border-blue-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
             />
           </div>
 
@@ -334,18 +335,19 @@ export default function TourForm() {
                 onClick={() => setPdfFile(null)}
                 className="ml-2 text-red-500"
               >
-                ลบ
+                ×
               </button>
             </div>
           )}
 
           <button
             type="submit"
-            className={`btn btn-primary w-full mt-4 ${isSubmitting ? "btn-disabled loading" : ""
-              }`}
+            className={`btn btn-primary w-full mt-4 ${
+              isSubmitting ? "btn-disabled loading" : ""
+            }`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "กำลังส่ง..." : "สร้างทัวร์"}
+            {isSubmitting ? "LOADING.." : "TOUR CREATE"}
           </button>
         </form>
       </div>

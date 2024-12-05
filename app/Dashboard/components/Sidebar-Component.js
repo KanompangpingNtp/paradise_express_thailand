@@ -1,17 +1,24 @@
-// Sidebar.js
 "use client";
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   HomeIcon,
-  ChartPieIcon,
-  UsersIcon,
-  CogIcon,
+  SwatchIcon,
+  ClipboardDocumentListIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 // Sidebar Component
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, activeMenu, setActiveMenu }) => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const pathname = usePathname(); // ใช้ดึงเส้นทาง URL ปัจจุบัน
+
+  const menus = [
+    { icon: HomeIcon, label: "Dashboard", href: "/Dashboard" },
+    { icon: SwatchIcon, label: "Tours Management", href: "/Dashboard/tour_section_manage" },
+    { icon: ClipboardDocumentListIcon, label: "Transfer", href: "/Dashboard/transfer" },
+  ];
+
   return (
     <div
       className={`fixed inset-y-0 left-0 z-30 w-72 bg-white/80 backdrop-blur-xl text-gray-800 transition-all duration-300 ease-in-out shadow-2xl ${
@@ -49,33 +56,23 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, activeMenu, setActiveMenu })
       {/* Navigation ส่วนลิ้งค์เมนู */}
       <nav className="p-4 space-y-2">
         <ul>
-          {[
-            { icon: HomeIcon, label: "Dashboard", href: "/Dashboard" },
-            {
-              icon: ChartPieIcon,
-              label: "Create Tours",
-              href: "/Dashboard/create_tour",
-            },
-            { icon: UsersIcon, label: "Team", href: "/team" },
-            { icon: CogIcon, label: "Settings", href: "/settings" },
-          ].map(({ icon: Icon, label, href }) => (
+          {menus.map(({ icon: Icon, label, href }) => (
             <li key={label}>
               <Link
                 href={href}
-                onClick={() => setActiveMenu(label)}
                 className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  activeMenu === label
+                  pathname === href
                     ? "bg-sky-100/70 text-sky-700 shadow-sm"
                     : "hover:bg-sky-50/50 text-gray-600 hover:text-sky-600"
                 }`}
               >
                 <Icon
                   className={`h-5 w-5 ${
-                    activeMenu === label ? "text-sky-600" : "text-gray-400"
+                    pathname === href ? "text-sky-600" : "text-gray-400"
                   }`}
                 />
                 <span className="font-medium">{label}</span>
-                {activeMenu === label && (
+                {pathname === href && (
                   <span className="ml-auto h-2 w-2 bg-sky-500 rounded-full animate-pulse"></span>
                 )}
               </Link>

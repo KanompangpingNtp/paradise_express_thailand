@@ -22,53 +22,54 @@ export async function GET() {
   export async function POST(req) {
     try {
       const formData = await req.formData();
-  
+
       console.log("Received Form Data:", formData);
-  
-      const tourSectionId = formData.get("tour_section_name");
+
+      const tourSectionName = formData.get("tour_section_name");
       const tourName = formData.get("tour_name");
       const tourDetail = formData.get("tour_detail");
-  
-      if (!tourSectionId) {
+
+      if (!tourSectionName) {
         return new Response(
           JSON.stringify({ success: false, message: "กรุณาเลือกหัวข้อทัวร์" }),
           { status: 400 }
         );
       }
-  
+
       const [sectionResult] = await pool.execute(
-        `SELECT id FROM tour_section WHERE id = ?`,
-        [tourSectionId]
+        `SELECT id FROM tour_section WHERE tour_section_name = ?`,
+        [tourSectionName]
       );
-  
+
       if (sectionResult.length === 0) {
         return new Response(
           JSON.stringify({ success: false, message: "หัวข้อทัวร์ไม่ถูกต้อง" }),
           { status: 400 }
         );
       }
-  
+      const tourSectionId = sectionResult[0].id;
+
       // สร้างข้อมูลในตาราง `tour`
       const [tourResult] = await pool.execute(
-        `INSERT INTO tour (tour_section_id, tour_name, tour_detail, created_at, updated_at) 
+        `INSERT INTO tour (tour_section_id, tour_name, tour_detail, created_at, updated_at)
         VALUES (?, ?, ?, NOW(), NOW())`,
         [tourSectionId, tourName, tourDetail]
       );
-  
+
       const tourId = tourResult.insertId;
-  
+
       const tourHighlights = formData.getAll("tour_highlights_detail[]");
-  
+
       if (tourHighlights.length > 0) {
         for (let highlight of tourHighlights) {
           await pool.execute(
-            `INSERT INTO tour_highlight (tour_id, tour_highlight_detail, created_at, updated_at) 
+            `INSERT INTO tour_highlight (tour_id, tour_highlight_detail, created_at, updated_at)
             VALUES (?, ?, NOW(), NOW())`,
             [tourId, highlight]
           );
         }
       }
-  
+
       const images = [];
       // จัดการกับรูปภาพ
       for (const [key, value] of formData.entries()) {
@@ -76,35 +77,34 @@ export async function GET() {
           const file = value;
           const index = key.match(/images\[(\d+)]/)[1]; // ดึง index จาก key
           const status = formData.get(`image_status_${index}`);
-  
+
           if (file && status) {
             const fileName = `${Date.now()}-${file.name}`;
             const filePath = path.join(process.cwd(), "public", "uploads", fileName);
             const buffer = Buffer.from(await file.arrayBuffer());
-  
+
             fs.writeFileSync(filePath, buffer);
-  
+
             const [result] = await pool.execute(
               `INSERT INTO tour_image (tour_id, tour_image_files, tour_image_status, created_at, updated_at)
                VALUES (?, ?, ?, NOW(), NOW())`,
               [tourId, fileName, status]
             );
-  
+
             images.push({ id: result.insertId, fileName, status });
           }
         }
       }
-  
+
       // จัดการกับไฟล์ PDF
       const pdfFile = formData.get("pdf_file");
-  
+
       if (pdfFile) {
-        console.log("PDF File received:", pdfFile);
-  
+
         const pdfFileName = `${Date.now()}-${pdfFile.name}`;
         const pdfFilePath = path.join(process.cwd(), "public", "pdf", pdfFileName);
         const pdfBuffer = Buffer.from(await pdfFile.arrayBuffer());
-  
+
         try {
           // บันทึกไฟล์ PDF
           fs.writeFileSync(pdfFilePath, pdfBuffer);
@@ -116,7 +116,7 @@ export async function GET() {
             { status: 500 }
           );
         }
-  
+
         try {
           // บันทึกข้อมูลในตาราง `tour_pdf`
           const [pdfResult] = await pool.execute(
@@ -132,7 +132,7 @@ export async function GET() {
             { status: 500 }
           );
         }
-  
+
         return new Response(
           JSON.stringify({ success: true, message: "Tour created successfully", tourId, images, pdfFileName }),
           { status: 200 }
@@ -143,7 +143,7 @@ export async function GET() {
           { status: 200 }
         );
       }
-      
+
     } catch (error) {
       console.error("Error:", error);
       return new Response(
@@ -152,5 +152,4 @@ export async function GET() {
       );
     }
   }
-  
-  
+
