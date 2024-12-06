@@ -10,8 +10,8 @@ export async function POST(req) {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
-    // logger: true, // เปิดการแสดงผล log
-    // debug: true, // เปิด debug mode
+    logger: true, // เปิดการแสดงผล log
+    debug: true, // เปิด debug mode
   });
 
   try {

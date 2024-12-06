@@ -5,6 +5,7 @@ import TourCard from "@/app/components/TourCard";
 import SearchBar from "@/app/components/SearchBar";
 import Top from "@/app/components/top";
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'; // นำเข้าไอคอนค้นหาจาก Heroicons
+import LoadingFornt from "@/app/components/LoadingFornt";
 
 // ฟังก์ชันที่ทำการ fetch ข้อมูลจาก API
 async function getToursData() {
@@ -71,9 +72,7 @@ const TourMonth = () => {
       <div className="w-full bg-white py-12">
         <div className="container mx-auto">
           {loading ? (
-            <div className="text-center">
-              <p className="text-xl font-semibold text-gray-600">Loading tours...</p>
-            </div>
+            <LoadingFornt/>
           ) : error ? (
             <div className="text-center text-red-500">
               <p className="text-xl font-semibold">Error: {error}</p>

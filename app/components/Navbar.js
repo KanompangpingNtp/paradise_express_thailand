@@ -45,7 +45,7 @@ const Navbar = () => {
     { href: "/pages/allTour/tour-sightseeing", label: "Sightseeing", icon: HeartIcon },
     { href: "/pages/transfer", label: "Transfer", icon: TruckIcon },
     { href: "/pages/customized", label: "Customized", icon: SwatchIcon },
-    { href: "#footer", label: "Contact", icon: PhoneIcon },
+    { href: "/pages/contact", label: "Contact", icon: PhoneIcon },
     { href: "/", label: "Login", icon: UserIcon },
   ];
 
