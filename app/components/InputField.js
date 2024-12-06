@@ -1,6 +1,13 @@
-import { BookOpenIcon, DocumentTextIcon, UserIcon, PhoneIcon, MailIcon } from "@heroicons/react/24/outline";
-
-const InputField = ({ label, id, type = "text", value, onChange, placeholder, icon }) => {
+const InputField = ({
+  label,
+  id,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  icon,
+  isTextArea = false // เพิ่ม prop สำหรับกำหนดเป็น textarea
+}) => {
   return (
     <div className="flex flex-col relative">
       <label htmlFor={id} className="text-sm font-semibold text-gray-700 mb-2">
@@ -13,14 +20,29 @@ const InputField = ({ label, id, type = "text", value, onChange, placeholder, ic
             {icon}
           </div>
         )}
-        <input
-          id={id}
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className={`w-full text-center border border-gray-300 bg-gray-200 text-gray-700 px-4 py-2 rounded-md pl-10 ${icon ? 'pr-3' : 'pr-4'}`}
-        />
+        {isTextArea ? (
+          <textarea
+            id={id}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            rows={4} // สามารถปรับจำนวนแถวของ textarea ได้
+            className={`w-full text-center border border-gray-300 bg-gray-200 text-gray-700 px-4 py-2 rounded-md pl-10 ${
+              icon ? "pr-3" : "pr-4"
+            }`}
+          />
+        ) : (
+          <input
+            id={id}
+            type={type}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            className={`w-full text-center border border-gray-300 bg-gray-200 text-gray-700 px-4 py-2 rounded-md pl-10 ${
+              icon ? "pr-3" : "pr-4"
+            }`}
+          />
+        )}
       </div>
     </div>
   );

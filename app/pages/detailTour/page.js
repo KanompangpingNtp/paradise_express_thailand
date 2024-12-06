@@ -9,6 +9,7 @@ import TabButton from "@/app/components/TabCard/TabButton";
 import TourOverview from "@/app/components/TabCard/TourOverview";
 import TourDeatilandCost from "@/app/components/TabCard/TourDeatilandCost";
 import ImageSlider from "@/app/components/ImageSlider";
+import LoadingFornt from "@/app/components/LoadingFornt";
 import {
   BookOpenIcon,
   CalendarIcon,
@@ -104,7 +105,7 @@ const DetailTour = () => {
         },
         body: JSON.stringify({
           to: "Akpailin@gmail.com",
-          subject: "จองทัวร์ท่องเที่ยว",
+          subject: "Booking Tour",
           text: `Booking Details:
             Full Name: ${bookingData.fullName}
             Email: ${bookingData.email}
@@ -136,7 +137,7 @@ const DetailTour = () => {
   };
 
   if (!card) {
-    return <div>Loading...</div>;
+    return <LoadingFornt/>;
   }
 
   return (

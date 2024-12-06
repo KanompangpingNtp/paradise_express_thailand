@@ -52,7 +52,7 @@ function Animation() {
         </Link>
 
         {/* Image 3 */}
-        <div className="flex justify-center lg:justify-center w-full h-auto mb-1">
+        <Link href="/pages/customized" className="flex justify-center lg:justify-center w-full h-auto mb-1">
           <Image
             src="/images/AnimtionSection/buttoms/003.png"
             alt="Graphic 3"
@@ -61,10 +61,10 @@ function Animation() {
             height={300}
             className="object-cover h-auto w-[20vh] 2xl:w-auto"
           />
-        </div>
+        </Link>
 
         {/* Image 4 */}
-        <div className="flex justify-center lg:justify-end w-full h-auto mb-1 lg:pr-10 xl:pr-20">
+        <Link href="/pages/customized" className="flex justify-center lg:justify-end w-full h-auto mb-1 lg:pr-10 xl:pr-20">
           <Image
             src="/images/AnimtionSection/buttoms/004.png"
             alt="Graphic 4"
@@ -73,7 +73,7 @@ function Animation() {
             height={300}
             className="object-cover h-auto w-[20vh] 2xl:w-auto"
           />
-        </div>
+        </Link>
       </div>
     </div>
   );
