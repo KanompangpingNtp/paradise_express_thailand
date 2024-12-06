@@ -64,7 +64,7 @@ function Animation() {
         </Link>
 
         {/* Image 4 */}
-        <Link href="/pages/customized" className="flex justify-center lg:justify-end w-full h-auto mb-1 lg:pr-10 xl:pr-20">
+        <Link href="/pages/contact" className="flex justify-center lg:justify-end w-full h-auto mb-1 lg:pr-10 xl:pr-20">
           <Image
             src="/images/AnimtionSection/buttoms/004.png"
             alt="Graphic 4"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,6 +20,7 @@ const Navbar = () => {
   const [show, setShow] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showBottomNav, setShowBottomNav] = useState(true);
+  const currentPath = usePathname(); // ใช้ usePathname แทน window.location.pathname
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > lastScrollY) {
@@ -37,8 +39,6 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [handleScroll]);
-
-  const currentPath = window.location.pathname;
 
   const menuItems = [
     { href: "/pages/allTour/tour-month", label: "Tour Packages", icon: ShoppingBagIcon },

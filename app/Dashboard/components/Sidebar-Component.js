@@ -15,8 +15,15 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   const menus = [
     { icon: HomeIcon, label: "Dashboard", href: "/Dashboard" },
+  ];
+
+  const toursMenus = [
     { icon: SwatchIcon, label: "Tours Management", href: "/Dashboard/tour_section_manage" },
-    { icon: ClipboardDocumentListIcon, label: "Transfer", href: "/Dashboard/transfer" },
+  ];
+
+  const transferMenus = [
+    { icon: ClipboardDocumentListIcon, label: "Routes Management", href: "/Dashboard/transfer/route" },
+    { icon: ClipboardDocumentListIcon, label: "Cars Management", href: "/Dashboard/transfer/car" },
   ];
 
   return (
@@ -56,28 +63,86 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       {/* Navigation ส่วนลิ้งค์เมนู */}
       <nav className="p-4 space-y-2">
         <ul>
-          {menus.map(({ icon: Icon, label, href }) => (
-            <li key={label}>
-              <Link
-                href={href}
-                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  pathname === href
-                    ? "bg-sky-100/70 text-sky-700 shadow-sm"
-                    : "hover:bg-sky-50/50 text-gray-600 hover:text-sky-600"
-                }`}
-              >
-                <Icon
-                  className={`h-5 w-5 ${
-                    pathname === href ? "text-sky-600" : "text-gray-400"
+          {/* Menu Group */}
+          <div className="mt-4">
+            <h2 className="text-sm font-semibold text-gray-600">Menu</h2>
+            {menus.map(({ icon: Icon, label, href }) => (
+              <li key={label}>
+                <Link
+                  href={href}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                    pathname === href
+                      ? "bg-sky-100/70 text-sky-700 shadow-sm"
+                      : "hover:bg-sky-50/50 text-gray-600 hover:text-sky-600"
                   }`}
-                />
-                <span className="font-medium">{label}</span>
-                {pathname === href && (
-                  <span className="ml-auto h-2 w-2 bg-sky-500 rounded-full animate-pulse"></span>
-                )}
-              </Link>
-            </li>
-          ))}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${
+                      pathname === href ? "text-sky-600" : "text-gray-400"
+                    }`}
+                  />
+                  <span className="font-medium">{label}</span>
+                  {pathname === href && (
+                    <span className="ml-auto h-2 w-2 bg-sky-500 rounded-full animate-pulse"></span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </div>
+
+          {/* Tours Menu Group */}
+          <div className="mt-4">
+            <h2 className="text-sm font-semibold text-gray-600">Tours</h2>
+            {toursMenus.map(({ icon: Icon, label, href }) => (
+              <li key={label}>
+                <Link
+                  href={href}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                    pathname === href
+                      ? "bg-sky-100/70 text-sky-700 shadow-sm"
+                      : "hover:bg-sky-50/50 text-gray-600 hover:text-sky-600"
+                  }`}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${
+                      pathname === href ? "text-sky-600" : "text-gray-400"
+                    }`}
+                  />
+                  <span className="font-medium">{label}</span>
+                  {pathname === href && (
+                    <span className="ml-auto h-2 w-2 bg-sky-500 rounded-full animate-pulse"></span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </div>
+
+          {/* Transfer Group */}
+          <div className="mt-4">
+            <h2 className="text-sm font-semibold text-gray-600">Transfer</h2>
+            {transferMenus.map(({ icon: Icon, label, href }) => (
+              <li key={label}>
+                <Link
+                  href={href}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                    pathname === href
+                      ? "bg-sky-100/70 text-sky-700 shadow-sm"
+                      : "hover:bg-sky-50/50 text-gray-600 hover:text-sky-600"
+                  }`}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${
+                      pathname === href ? "text-sky-600" : "text-gray-400"
+                    }`}
+                  />
+                  <span className="font-medium">{label}</span>
+                  {pathname === href && (
+                    <span className="ml-auto h-2 w-2 bg-sky-500 rounded-full animate-pulse"></span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </div>
         </ul>
       </nav>
     </div>
