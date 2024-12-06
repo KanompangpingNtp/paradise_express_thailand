@@ -4,23 +4,20 @@ import { NextResponse } from "next/server";
 // Handle GET request
 export async function GET() {
     try {
-        // ดึงข้อมูลจังหวัดทั้งหมด
-        const [provinces] = await pool.query("SELECT id, province_name FROM province");
-
-        // ดึงข้อมูลรูททั้งหมด
-        const [routes] = await pool.query(`
-            SELECT 
+        // ดึงข้อมูลรูททั้งหมด พร้อมกับชื่อจังหวัดและ province_id
+        const [routesWithProvince] = await pool.query(`
+            SELECT
                 route.id AS route_id,
                 route.route_name,
+                route.province_id,
                 province.province_name
             FROM route
             JOIN province ON route.province_id = province.id
         `);
 
-        // ส่งข้อมูลรวมกลับไป
+        // ส่งข้อมูลที่ได้กลับไป
         return NextResponse.json({
-            provinces, // ข้อมูลจังหวัดสำหรับ select option
-            routes,    // ข้อมูลรูทที่สร้างแล้ว
+            routes: routesWithProvince,  // ข้อมูลรูทที่รวม province_id และ ชื่อจังหวัด
         });
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -29,34 +26,38 @@ export async function GET() {
 }
 
 
-// Handle POST request
-export async function POST(request) {
+
+// Handle POST request สำหรับการสร้าง Route ใหม่
+export async function POST(req) {
     try {
-        // รับข้อมูลจาก Body
-        const { province_id, route_name } = await request.json();
+      const { route_name, province_id } = await req.json(); // รับข้อมูลชื่อ route และ province_id จาก request
 
-        // ตรวจสอบข้อมูล
-        if (!province_id || !route_name) {
-            return NextResponse.json(
-                { error: "Province ID and Route Name are required" },
-                { status: 400 }
-            );
-        }
-
-        // เพิ่มข้อมูลในตาราง route
-        const [result] = await pool.query(
-            "INSERT INTO route (province_id, route_name) VALUES (?, ?)",
-            [province_id, route_name]
+      if (!route_name || route_name.trim() === "" || !province_id) {
+        return new Response(
+          JSON.stringify({ error: "Route name and province_id are required" }),
+          { status: 400 }
         );
+      }
 
-        return NextResponse.json({
-            id: result.insertId,
-            province_id,
-            route_name,
-            message: "Route created successfully",
-        });
+      // สร้าง route ใหม่ในฐานข้อมูล
+      const [result] = await pool.query(
+        "INSERT INTO route (route_name, province_id) VALUES (?, ?)",
+        [route_name, province_id]
+      );
+
+      // ส่งข้อมูลกลับ
+      return new Response(
+        JSON.stringify({
+          id: result.insertId,
+          message: "Route created successfully",
+        }),
+        { status: 201 }
+      );
     } catch (error) {
-        console.error("Error creating route:", error);
-        return NextResponse.json({ error: "Failed to create route" }, { status: 500 });
+      console.error("Error creating route:", error);
+      return new Response(
+        JSON.stringify({ error: "Failed to create route" }),
+        { status: 500 }
+      );
     }
-}
+  }

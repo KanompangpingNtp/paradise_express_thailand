@@ -1,46 +1,44 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import {
+  PlusCircleIcon,
   PencilSquareIcon,
   TrashIcon,
-  PlusCircleIcon,
-  TagIcon,
-  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
-import Swal from "sweetalert2";
-import { useState, useEffect } from "react";
-import Loading from "@/app/components/Loading";
+import { useRouter } from "next/navigation";
+import Loading from "@/app/components/Loading"; // โหลดส่วนการโหลด
 
-export default function ProvinceManage() {
+const ProvinceManagement = () => {
   const [provinces, setProvinces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const router = useRouter(); // สำหรับการทำ route
+  const router = useRouter(); // เรียก useRouter ที่นี่
 
+
+  // ดึงข้อมูลจาก API
   useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const response = await fetch("/api/route/province");
+        const data = await response.json();
+        if (response.ok) {
+          setProvinces(data); // ตั้งค่าผลลัพธ์ที่ได้รับจาก API
+        } else {
+          throw new Error(data.error || "Failed to fetch provinces");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchProvinces();
   }, []);
 
-  const fetchProvinces = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/route");
-      const data = await response.json();
-
-      if (data.success) {
-        setProvinces(data.data);
-      } else {
-        throw new Error(data.message || "Failed to fetch data");
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreate = async () => {
-    const { value: newProvinceName } = await Swal.fire({
+  // ฟังก์ชันสร้างจังหวัดใหม่
+  const handleCreateProvince = async () => {
+    const { value: provinceName } = await Swal.fire({
       title: "Create New Province",
       input: "text",
       inputLabel: "Enter Province Name",
@@ -54,21 +52,22 @@ export default function ProvinceManage() {
       },
     });
 
-    if (newProvinceName) {
+    if (provinceName) {
       try {
-        const response = await fetch("/api/route", {
+        const response = await fetch("/api/route/province", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ province_name: newProvinceName }),
+          body: JSON.stringify({ province_name: provinceName }),
         });
-
         const data = await response.json();
-
-        if (data.success) {
-          Swal.fire("Success", "Province created successfully!", "success");
-          fetchProvinces(); // Refresh the list
+        if (response.ok) {
+          Swal.fire("Success", data.message, "success");
+          setProvinces((prev) => [
+            ...prev,
+            { id: data.id, province_name: provinceName },
+          ]); // เพิ่มจังหวัดใหม่ใน list
         } else {
-          throw new Error(data.message || "Failed to create province");
+          throw new Error(data.error || "Failed to create province");
         }
       } catch (err) {
         Swal.fire("Error", err.message, "error");
@@ -76,8 +75,8 @@ export default function ProvinceManage() {
     }
   };
 
-  const handleEdit = async (id, currentName) => {
-    const { value: newProvinceName } = await Swal.fire({
+  const handleEditProvince = async (id, currentName) => {
+    const { value: provinceName } = await Swal.fire({
       title: "Edit Province",
       input: "text",
       inputLabel: "Enter New Province Name",
@@ -92,21 +91,26 @@ export default function ProvinceManage() {
       },
     });
 
-    if (newProvinceName) {
+    if (provinceName) {
       try {
-        const response = await fetch(`/api/route/${id}`, {
+        const response = await fetch(`/api/route/province/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ province_name: newProvinceName }),
+          body: JSON.stringify({ province_name: provinceName }),
         });
 
         const data = await response.json();
-
-        if (data.success) {
-          Swal.fire("Success", "Province updated successfully!", "success");
-          fetchProvinces(); // Refresh the list
+        if (response.ok) {
+          Swal.fire("Success", "Province updated successfully", "success");
+          setProvinces((prev) =>
+            prev.map((province) =>
+              province.id === id
+                ? { ...province, province_name: provinceName }
+                : province
+            )
+          );
         } else {
-          throw new Error(data.message || "Failed to update province");
+          throw new Error(data.error || "Failed to update province");
         }
       } catch (err) {
         Swal.fire("Error", err.message, "error");
@@ -114,7 +118,8 @@ export default function ProvinceManage() {
     }
   };
 
-  const handleDelete = async (id) => {
+  // ฟังก์ชันลบจังหวัด
+  const handleDeleteProvince = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -126,17 +131,15 @@ export default function ProvinceManage() {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`/api/route/${id}`, {
+        const response = await fetch(`/api/route/province/${id}`, {
           method: "DELETE",
         });
-
         const data = await response.json();
-
-        if (data.success) {
+        if (response.ok) {
           Swal.fire("Deleted!", "Province has been deleted.", "success");
-          fetchProvinces(); // Refresh the list
+          setProvinces((prev) => prev.filter((province) => province.id !== id)); // ลบจังหวัดออกจาก list
         } else {
-          throw new Error(data.message || "Failed to delete province");
+          throw new Error(data.error || "Failed to delete province");
         }
       } catch (err) {
         Swal.fire("Error", err.message, "error");
@@ -144,22 +147,27 @@ export default function ProvinceManage() {
     }
   };
 
-  const handleViewDetails = (provinceName) => {
-    router.push(`/Dashboard/show_route_list/${provinceName}`);
+  const handleViewRoutes = (provinceId) => {
+    if (provinceId) {
+      router.push(`/Dashboard/transfer/route/route_main/${provinceId}`);
+    } else {
+      Swal.fire("Error", "Province id is missing", "error");
+    }
   };
 
   return (
-    <div>
+    <div className="container mx-auto p-6">
       {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
-      <div className="text-3xl text-center font-bold text-sky-600 flex items-center justify-center">
-        <ClipboardDocumentListIcon className="w-8 h-8 mr-2" />
-        <span>Province Management</span>
+
+      <div className="text-3xl text-center font-bold text-sky-600 mb-6">
+        Province Management
       </div>
 
+      {/* ปุ่มสร้างจังหวัดใหม่ */}
       <div className="w-full flex justify-center lg:justify-end my-6">
         <button
-          onClick={handleCreate}
+          onClick={handleCreateProvince}
           className="w-full lg:w-auto bg-sky-400 text-white px-6 py-3 rounded-md flex items-center justify-center gap-3 hover:bg-sky-600 transition-all duration-300"
         >
           <PlusCircleIcon className="w-6 h-6" />
@@ -167,56 +175,49 @@ export default function ProvinceManage() {
         </button>
       </div>
 
-      {!loading && !error && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {provinces.map((province) => (
-            <div
-              key={province.id}
-              className="bg-white rounded-lg shadow-md p-4 border border-blue-200 hover:shadow-md hover:shadow-sky-400 duration-300"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-bold text-lg text-sky-600 flex items-center">
-                  {province.province_name}
-                  <TagIcon className="w-5 h-5 ml-2" />
-                </h3>
-                <span className="text-sm text-gray-500">ID: {province.id}</span>
-              </div>
-
-              <p className="text-sm text-gray-700">
-                Number of Routes:{" "}
-                <span className="text-lg text-sky-400 font-bold">
-                  {province.route_count}
-                </span>
-              </p>
-              <div className="flex justify-end mt-4 space-x-2">
-                <button
-                  onClick={() =>
-                    handleEdit(province.id, province.province_name)
-                  }
-                  className="bg-yellow-400 text-white px-3 py-2 rounded-md hover:bg-yellow-500 flex items-center duration-300"
-                >
-                  <PencilSquareIcon className="w-5 h-5 mr-2" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(province.id)}
-                  className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center duration-300"
-                >
-                  <TrashIcon className="w-5 h-5 mr-2" />
-                  Delete
-                </button>
-                <button
-                  onClick={() => handleViewDetails(province.province_name)}
-                  className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 flex items-center duration-300"
-                >
-                  <ClipboardDocumentListIcon className="w-5 h-5 mr-2" />
-                  <span className="mr-2">Routes</span>
-                </button>
-              </div>
+      {/* แสดงรายชื่อจังหวัด */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {provinces.map((province) => (
+          <div
+            key={province.id}
+            className="bg-white rounded-lg shadow-md p-4 border border-blue-200 hover:shadow-md hover:shadow-sky-400 duration-300"
+          >
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-lg text-sky-600">
+                {province.province_name}
+              </h3>
+              <span className="text-sm text-gray-500">ID: {province.id}</span>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="flex justify-end mt-4 space-x-2">
+              {/* ปุ่ม Edit, Delete */}
+              <button
+                onClick={() =>
+                  handleEditProvince(province.id, province.province_name)
+                }
+                className="bg-yellow-400 text-white px-3 py-2 rounded-md hover:bg-yellow-500 flex items-center duration-300"
+              >
+                <PencilSquareIcon className="w-5 h-5 mr-2" />
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteProvince(province.id)}
+                className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center duration-300"
+              >
+                <TrashIcon className="w-5 h-5 mr-2" />
+                Delete
+              </button>
+              <button
+                onClick={() => handleViewRoutes(province.id)}
+                className="bg-sky-400 text-white px-3 py-2 rounded-md hover:bg-sky-500 flex items-center duration-300"
+              >
+                View Routes
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default ProvinceManagement;
