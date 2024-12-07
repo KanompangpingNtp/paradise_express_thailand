@@ -41,7 +41,6 @@ const CarSlider = ({ cars }) => {
   };
 
   const currentCar = cars[currentCarIndex];
-
   return (
     <div className="w-full sm:h-screen flex items-center justify-center pb-2">
       <div className="w-full h-full mx-auto flex flex-col xl:flex-row rounded-2xl overflow-hidden">
@@ -61,9 +60,9 @@ const CarSlider = ({ cars }) => {
               <br className="hidden xl:block" /> safe journey for you.
             </p>
             <Link
-            href={{
-              pathname: `/pages/allTransfer`, // ใช้ title หรือ ID ของ card
-            }}
+              href={{
+                pathname: `/pages/allTransfer`, // ปรับเส้นทางตามต้องการ
+              }}
               className="w-auto text-orange-500 py-4 px-8 rounded-lg border-orange-500 border-2
              transition-all duration-300
             uppercase font-bold tracking-wider
@@ -81,13 +80,25 @@ const CarSlider = ({ cars }) => {
           onMouseLeave={() => setIsHovered(false)}
         >
           <img
-            src={currentCar.image}
+            src={
+              currentCar.image
+                ? `/uploads/${currentCar.image}`
+                : "/default-image.jpg"
+            }
             alt={currentCar.name}
             className="w-full min-h-screen xl:min-h-screen object-cover hover:grayscale-0 transition-all rounded-2xl duration-500"
           />
 
           {/* Car Details Overlay */}
-          <CarDetailsOverlay car={currentCar} isHovered={isHovered} />
+          <CarDetailsOverlay
+            car={{
+              name: currentCar.name,
+              description: currentCar.description,
+              price: currentCar.pricePerDay,
+              features: currentCar.features, // เพิ่ม features
+            }}
+            isHovered={isHovered}
+          />
 
           {/* Navigation Buttons */}
           <SliderNavButtons onPrev={handlePrevCar} onNext={handleNextCar} />

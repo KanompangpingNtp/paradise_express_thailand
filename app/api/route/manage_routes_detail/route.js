@@ -6,7 +6,7 @@ export async function GET() {
     try {
         // ดึงข้อมูล route พร้อมกับ province_name
         const [routes] = await pool.query(`
-            SELECT 
+            SELECT
                 route.id AS route_id,
                 route.route_name,
                 province.province_name
@@ -16,7 +16,7 @@ export async function GET() {
 
         // ดึงข้อมูล route_detail พร้อมกับ route_name และ province_name
         const [routes_detail] = await pool.query(`
-            SELECT 
+            SELECT
                 route_detail.id AS route_detail_id,
                 route.route_name,
                 province.province_name,
@@ -50,7 +50,7 @@ export async function POST(request) {
             VALUES (?, ?)
         `, [route_id, route_detail_name]);
 
-        // ตรวจสอบการ insert 
+        // ตรวจสอบการ insert
         if (result.affectedRows > 0) {
             return NextResponse.json({
                 message: "Route detail created successfully",

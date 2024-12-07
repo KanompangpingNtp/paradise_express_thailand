@@ -1,44 +1,48 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CarSlider from '@/app/components/SliderCar/page';
+import LoadingFornt from '@/app/components/LoadingFornt';
 
 const CarRentalPage = () => {
-  const carData = [
-    {
-      id: 1,
-      name: 'Porsche 911 Carrera',
-      year: 2024,
-      pricePerDay: 500,
-      transmission: 'PDK Automatic',
-      fuelType: 'Gasoline',
-      image: '/images/03.jpg',
-      description: 'ประสิทธิภาพสูง ดีไซน์คลาสสิก ความเป็นสปอร์ตระดับโลก',
-      features: ['เครื่องยนต์ 3.0L Twin-Turbo', 'ความเร็วสูงสุด 293 กม./ชม.', 'เร่ง 0-100 กม./ชม. ใน 3.4 วินาที']
-    },
-    {
-      id: 2,
-      name: 'Mercedes-AMG GT',
-      year: 2023,
-      pricePerDay: 450,
-      transmission: 'Automatic',
-      fuelType: 'Hybrid Performance',
-      image: '/images/02.jpg',
-      description: 'นวัตกรรมแห่งความทรงพลัง สมรรถนะเหนือระดับ',
-      features: ['เครื่องยนต์ 4.0L V8', 'ระบบไฮบริดสมรรถนะสูง', 'การออกแบบแบบ Aerodynamic']
-    },
-    {
-      id: 3,
-      name: 'BMW M4 Competition',
-      year: 2024,
-      pricePerDay: 420,
-      transmission: 'M Sport Automatic',
-      fuelType: 'High-Performance Gasoline',
-      image: '/images/01.jpg',
-      description: 'ความทรงพลังแห่งวิศวกรรมยานยนต์ สไตล์สปอร์ตสุดคม',
-      features: ['เครื่องยนต์ 3.0L Inline-6', 'ระบบขับเคลื่อน M xDrive', 'น้ำหนักเบาด้วยวัสดุคาร์บอน']
-    }
-  ];
+  const [routeData, setRouteData] = useState([]);
 
+  // ฟังก์ชันในการดึงข้อมูล
+  useEffect(() => {
+    const fetchRouteData = async () => {
+      try {
+        const response = await fetch('/api/route/route_total');
+        const data = await response.json();
+        setRouteData(data.routeData); // เก็บเฉพาะ routeData
+      } catch (error) {
+        console.error('Error fetching route data:', error);
+      }
+    };
+
+    fetchRouteData();
+  }, []);
+
+  // หากยังโหลดข้อมูลไม่เสร็จให้แสดงข้อความ
+  if (routeData.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoadingFornt/>
+      </div>
+    );
+  }
+
+
+  // สร้าง carData โดยใช้ข้อมูลจาก routeData
+  const carData = routeData.map((route) => {
+    const carImages = route.car_images_files ? route.car_images_files.split(",") : ["default-image.jpg"];
+    return {
+      id: route.route_total_id || "unknown-id",
+      name: route.route_name || "ไม่ระบุชื่อ",
+      pricePerDay: route.data_price || "ไม่ระบุ",
+      image: carImages[0],
+      description: route.route_detail_name || "ไม่มีคำบรรยาย",
+      features: [route.car_brand_name || "ไม่ระบุจังหวัด", route.car_model_name  || "ไม่ระบุเส้นทาง"],
+    };
+  });
 
   return <CarSlider cars={carData} />;
 };

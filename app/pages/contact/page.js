@@ -101,7 +101,7 @@ function Page() {
       <div
         className="bg-cover w-full h-screen flex items-center justify-center px-4 py-6"
         style={{
-          backgroundImage: "url('/images/customize/map-location-pin.jpg')",
+          backgroundImage: "url('/images/contact/marcom-contact-bg-bg.jpg')",
         }}
       >
         <div className="bg-gray-200 text-gray-700 shadow-2xl shadow-black rounded-lg p-8 w-full max-w-3xl">
@@ -116,7 +116,7 @@ function Page() {
       <div
         className="bg-cover w-full h-screen flex items-center justify-center px-4 py-6"
         style={{
-          backgroundImage: "url('/images/customize/map-location-pin.jpg')",
+          backgroundImage: "url('/images/contact/marcom-contact-bg-bg.jpg')",
         }}
       >
         <div className="bg-gray-200 text-gray-700 shadow-2xl shadow-black rounded-lg p-8 w-full max-w-3xl">
@@ -138,7 +138,7 @@ function Page() {
     <div
       className="bg-cover w-full min-h-screen flex items-center justify-center px-4 py-6"
       style={{
-        backgroundImage: "url('/images/customize/map-location-pin.jpg')",
+        backgroundImage: "url('/images/contact/marcom-contact-bg-bg.jpg')",
       }}
     >
       <div className="bg-gray-200 text-gray-700 shadow-2xl shadow-black rounded-lg p-8 w-full max-w-3xl">

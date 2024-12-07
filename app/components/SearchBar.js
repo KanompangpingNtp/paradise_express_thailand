@@ -7,7 +7,7 @@ const SearchBar = ({ query, onSearch }) => {
         <input
           type="text"
           value={query}
-          placeholder="Search Tours and Highlights"
+          placeholder="Search..."
           onChange={(e) => onSearch(e.target.value)}
           className="w-full text-center bg-white text-gray-700 border-2 border-orange-500 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 pr-10" // เพิ่ม padding ขวาสำหรับไอคอน
         />
