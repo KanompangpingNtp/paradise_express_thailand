@@ -1,8 +1,11 @@
+"use client"
+import React, { useState, useEffect } from "react";
 import Herovideo from "./components/hero-video";
 import Animtion from "./components/animtion-section-two";
 import TourAll from "./components/tour-all";
 import TourAsia from "./components/tour-asia";
 import Transfer from "./components/transfer";
+import LoadingFornt from "@/app/components/LoadingFornt";
 
 // ฟังก์ชันที่ทำการ fetch ข้อมูลจาก API
 async function getToursData() {
@@ -14,8 +17,33 @@ async function getToursData() {
   return data.tours || [];
 }
 
-const Home = async () => {
-  const tours = await getToursData(); // ดึงข้อมูลจาก API
+const Home = () => {
+  const [tours, setTours] = useState([]); // เก็บข้อมูล tours
+  const [loading, setLoading] = useState(true); // สถานะการโหลด
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const data = await getToursData();
+        setTours(data);
+      } catch (error) {
+        console.error("Error fetching tours:", error);
+      } finally {
+        setLoading(false); // สิ้นสุดการโหลด
+      }
+    };
+
+    fetchTours();
+  }, []);
+
+  // แสดง Loading UI หากยังโหลดข้อมูลไม่เสร็จ
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoadingFornt/>
+      </div>
+    );
+  }
 
   // กรองข้อมูล tours ตาม section_name
   const tourBySection = tours.reduce((acc, tour) => {
@@ -52,7 +80,6 @@ const Home = async () => {
       >
         <div className="flex flex-col justify-center items-center pt-20">
           <div className="container mx-auto text-white">
-            {/* แสดงผลแต่ละ section ตาม section_name แต่ไม่แสดง TourAsia */}
             {Object.keys(tourBySection).map(
               (sectionName, index) =>
                 sectionName !== "Tour Asia" && (
@@ -70,20 +97,12 @@ const Home = async () => {
 
       {/* Asia Tour Section */}
       <section>
-        {/* แสดง TourAll สำหรับหน้าจอน้อยกว่า sm */}
         <div className="block container mx-auto bg-white sm:hidden shadow-inner shadow-black">
-          <TourAll
-            sectionName="TourAsia"
-            tours={tourAsiaData} // ส่งข้อมูลที่เกี่ยวข้องกับ TourAsia
-          />
+          <TourAll sectionName="TourAsia" tours={tourAsiaData} />
         </div>
 
-        {/* แสดง TourAsia สำหรับหน้าจอที่มีขนาดตั้งแต่ sm ขึ้นไป */}
         <div className="hidden sm:block">
-          <TourAsia
-            sectionName="Tour Asia"
-            tours={tourAsiaData} // ส่งข้อมูลที่เกี่ยวข้องกับ TourAsia
-          />
+          <TourAsia sectionName="Tour Asia" tours={tourAsiaData} />
         </div>
       </section>
 

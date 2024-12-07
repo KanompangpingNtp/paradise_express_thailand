@@ -1,194 +1,101 @@
 "use client";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import LoadingFornt from "@/app/components/LoadingFornt";
+import { useRouter } from "next/navigation";
+import { SearchIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 
 function Page() {
-  const [selectedProvince, setSelectedProvince] = useState(""); // จังหวัดที่เลือก
-  const [selectedTour, setSelectedTour] = useState(""); // หัวข้อทัวร์ที่เลือก
-  const [selectedDetailTour, setSelectedDetailTour] = useState(""); // รายละเอียดทัวร์ที่เลือก
-  const [selectedDate, setSelectedDate] = useState(""); // วันที่ที่เลือก
-  const [isNextVisible, setIsNextVisible] = useState(false); // การแสดงปุ่ม Next
+  const [routeData, setRouteData] = useState([]);
+  const [filteredOptions, setFilteredOptions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState("");
 
-  // ข้อมูลที่เป็นจังหวัด, หัวข้อทัวร์, และรายละเอียดทัวร์
-  const provinces = [
-    {
-      name: "Bangkok",
-      tours: [
-        {
-          name: "Tour 1",
-          details: ["Detail 1A", "Detail 1B", "Detail 1C"],
-        },
-        {
-          name: "Tour 2",
-          details: ["Detail 2A", "Detail 2B", "Detail 2C"],
-        },
-      ],
-    },
-    {
-      name: "Chiang Mai",
-      tours: [
-        {
-          name: "Tour A",
-          details: ["Detail A1", "Detail A2", "Detail A3"],
-        },
-        {
-          name: "Tour B",
-          details: ["Detail B1", "Detail B2", "Detail B3"],
-        },
-      ],
-    },
-    {
-      name: "Phuket",
-      tours: [
-        {
-          name: "Tour X",
-          details: ["Detail X1", "Detail X2", "Detail X3"],
-        },
-        {
-          name: "Tour Y",
-          details: ["Detail Y1", "Detail Y2", "Detail Y3"],
-        },
-      ],
-    },
-  ];
+  const router = useRouter();
 
-  // ฟังก์ชันเมื่อเลือกจังหวัด
-  const handleProvinceChange = (event) => {
-    setSelectedProvince(event.target.value);
-    setSelectedTour(""); // รีเซ็ตการเลือกหัวข้อทัวร์
-    setSelectedDetailTour(""); // รีเซ็ตการเลือกรายละเอียดทัวร์
-    setIsNextVisible(false); // ซ่อนปุ่ม Next เมื่อเริ่มใหม่
-  };
+  useEffect(() => {
+    const fetchRouteData = async () => {
+      try {
+        const response = await fetch("/api/route/route_total");
+        const data = await response.json();
+        setRouteData(data.routeData || []);
+      } catch (error) {
+        console.error("Error fetching route data:", error);
+      }
+    };
 
-  // ฟังก์ชันเมื่อเลือกหัวข้อทัวร์
-  const handleTourChange = (event) => {
-    setSelectedTour(event.target.value);
-    setSelectedDetailTour(""); // รีเซ็ตการเลือกรายละเอียดทัวร์
-    setIsNextVisible(false); // ซ่อนปุ่ม Next เมื่อเริ่มใหม่
-  };
+    fetchRouteData();
+  }, []);
 
-  // ฟังก์ชันเมื่อเลือกรายละเอียดทัวร์
-  const handleDetailTourChange = (event) => {
-    setSelectedDetailTour(event.target.value);
-    setIsNextVisible(true); // แสดงปุ่ม Next เมื่อเลือกรายละเอียดทัวร์
-  };
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredOptions([]);
+    } else {
+      const filtered = routeData
+        .filter((route) =>
+          `${route.province_name} - ${route.route_name} - ${route.route_detail_name}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        )
+        .slice(0, 5);
+      setFilteredOptions(filtered);
+    }
+  }, [searchTerm, routeData]);
 
-  // ฟังก์ชันเมื่อเลือกวันที่
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
-
-  // หาข้อมูลของจังหวัดที่เลือก
-  const selectedProvinceData = provinces.find(
-    (province) => province.name === selectedProvince
-  );
-
-  // หาข้อมูลของหัวข้อทัวร์ที่เลือกจากจังหวัดที่เลือก
-  const selectedTourData =
-    selectedProvinceData?.tours.find((tour) => tour.name === selectedTour);
-
-  // ฟังก์ชันเมื่อคลิกปุ่ม Next
   const handleNextClick = () => {
-    // ส่งข้อมูลที่เก็บทั้งหมดไป (ในที่นี้จะเป็นการแสดงใน console)
-    console.log({
-      selectedProvince,
-      selectedTour,
-      selectedDetailTour,
-      selectedDate,
-    });
-    // คุณสามารถนำข้อมูลไปทำการบันทึกหรือส่งไปยัง backend ได้ที่นี่
+    if (selectedRoute) {
+      // ส่ง selectedRoute ไปใน URL params
+      router.push(`/pages/allTransfer/${selectedRoute}`);
+    }
   };
 
   return (
     <div
       className="bg-cover w-full h-screen"
       style={{
-        backgroundImage: "url('/images/Transfer/berlin_bg-1.jpg')", // กำหนดรูปภาพเป็นพื้นหลัง
+        backgroundImage: "url('/images/Transfer/berlin_bg-1.jpg')",
       }}
     >
       <div className="w-full h-full flex justify-center items-center">
-        <div className="bg-gray-200 text-gray-700 px-4 py-12 shadow-2xl shadow-black">
-          <div className="border-orange-500 border-l-4 text-2xl p-6 mb-5">
-            Select your province, tour, detail tour, and date
+        <div className="bg-gray-200 text-gray-700 px-4 py-12 shadow-2xl shadow-black w-full max-w-3xl">
+          <div className="text-3xl font-bold mb-6 uppercase border-orange-500 border-l-4 py-4 pl-6">
+            Select Your Route
           </div>
-
-          {/* ช่อง select สำหรับจังหวัด */}
-          <div className="relative w-full px-2 mb-4">
-            <select
-              value={selectedProvince}
-              onChange={handleProvinceChange}
-              className="block w-full px-4 py-3 bg-gray-300 border border-gray-300 rounded-md"
-            >
-              <option value="" disabled>
-                Select Province
-              </option>
-              {provinces.map((province, index) => (
-                <option key={index} value={province.name}>
-                  {province.name}
-                </option>
-              ))}
-            </select>
+          <div className="relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search for a route..."
+              className="block w-full px-6 py-4 mb-4 text-lg bg-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            {filteredOptions.length > 0 && (
+              <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-auto">
+                {filteredOptions.map((route) => (
+                  <li
+                    key={route.route_total_id}
+                    onClick={() => {
+                      setSelectedRoute(route.route_total_id);
+                      setSearchTerm(
+                        `${route.province_name} - ${route.route_name} - ${route.route_detail_name}`
+                      );
+                      setFilteredOptions([]);
+                    }}
+                    className="px-6 py-3 hover:bg-gray-200 cursor-pointer text-lg"
+                  >
+                    {`${route.province_name} - ${route.route_name} - ${route.route_detail_name}`}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-
-          {/* ช่อง select สำหรับหัวข้อทัวร์ */}
-          {selectedProvince && (
-            <div className="relative w-full px-2 mb-4">
-              <select
-                value={selectedTour}
-                onChange={handleTourChange}
-                className="block w-full px-4 py-3 bg-gray-300 border border-gray-300 rounded-md"
-              >
-                <option value="" disabled>
-                  Select Tour
-                </option>
-                {selectedProvinceData?.tours.map((tour, index) => (
-                  <option key={index} value={tour.name}>
-                    {tour.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* ช่อง select สำหรับรายละเอียดทัวร์ */}
-          {selectedTour && (
-            <div className="relative w-full px-2 mb-4">
-              <select
-                value={selectedDetailTour}
-                onChange={handleDetailTourChange}
-                className="block w-full px-4 py-3 bg-gray-300 border border-gray-300 rounded-md"
-              >
-                <option value="" disabled>
-                  Select Detail Tour
-                </option>
-                {selectedTourData?.details.map((detail, index) => (
-                  <option key={index} value={detail}>
-                    {detail}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* ช่อง input date เมื่อเลือกข้อมูลในช่อง 3 */}
-          {selectedDetailTour && (
-            <div className="relative w-full px-2 mb-4">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="block w-full px-4 py-3 bg-gray-300 border border-gray-300 rounded-md"
-              />
-            </div>
-          )}
-
-          {/* ปุ่ม Next ที่จะแสดงหลังจากเลือกข้อมูลครบ */}
-          {isNextVisible && selectedDate && (
-            <div className="flex justify-center w-full">
+          {selectedRoute && (
+            <div className="mt-6 flex justify-center w-full">
               <button
                 onClick={handleNextClick}
-                className="px-6 py-3 mt-4 bg-orange-500 text-white rounded-md hover:bg-orange-600 duration-300 w-full hover:tracking-widest"
+                className="px-6 py-4 bg-orange-500 text-white rounded-md hover:bg-orange-600 duration-300 w-full max-w-xs flex items-center justify-center"
               >
-                NEXT
+                <ArrowRightIcon className="w-5 h-5 mr-2" />
+                Next
               </button>
             </div>
           )}

@@ -43,7 +43,7 @@ const Navbar = () => {
   const menuItems = [
     { href: "/pages/allTour/tour-month", label: "Tour Packages", icon: ShoppingBagIcon },
     { href: "/pages/allTour/tour-sightseeing", label: "Sightseeing", icon: HeartIcon },
-    { href: "/pages/transfer", label: "Transfer", icon: TruckIcon },
+    { href: "/pages/allTransfer", label: "Transfer", icon: TruckIcon },
     { href: "/pages/customized", label: "Customized", icon: SwatchIcon },
     { href: "/pages/contact", label: "Contact", icon: PhoneIcon },
     { href: "/", label: "Login", icon: UserIcon },

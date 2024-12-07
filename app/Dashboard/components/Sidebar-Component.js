@@ -24,6 +24,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const transferMenus = [
     { icon: ClipboardDocumentListIcon, label: "Routes Management", href: "/Dashboard/transfer/route" },
     { icon: ClipboardDocumentListIcon, label: "Cars Management", href: "/Dashboard/transfer/car" },
+    { icon: ClipboardDocumentListIcon, label: "Connect line and vehicle data", href: "/Dashboard/transfer/connect_line_and_vehicle_data" },
   ];
 
   return (

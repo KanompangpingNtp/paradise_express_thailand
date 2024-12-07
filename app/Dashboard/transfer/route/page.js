@@ -210,7 +210,7 @@ const ProvinceManagement = () => {
                 onClick={() => handleViewRoutes(province.id)}
                 className="bg-sky-400 text-white px-3 py-2 rounded-md hover:bg-sky-500 flex items-center duration-300"
               >
-                View Routes
+                View
               </button>
             </div>
           </div>

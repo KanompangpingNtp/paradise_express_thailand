@@ -5,7 +5,7 @@ export async function GET() {
   try {
       // ดึงข้อมูล route_detail
       const [routesDetail] = await pool.query(`
-          SELECT 
+          SELECT
               route_detail.id AS route_detail_id,
               route.route_name,
               province.province_name,
@@ -17,35 +17,40 @@ export async function GET() {
 
       // ดึงข้อมูล car_model
       const [carBrandsData] = await pool.query(`
-          SELECT 
-              cm.id AS car_model_id,
-              cb.car_brand_name, 
-              cm.car_model_name,
-              ci.car_images_file
-          FROM 
-              car_brand cb
-          LEFT JOIN car_model cm ON cb.id = cm.car_brand_id
-          LEFT JOIN car_images ci ON cm.id = ci.car_model_id
+            SELECT
+                cm.id AS car_model_id,
+                cb.car_brand_name,
+                cm.car_model_name
+            FROM
+                car_brand cb
+            LEFT JOIN car_model cm ON cb.id = cm.car_brand_id
+            LEFT JOIN car_images ci ON cm.id = ci.car_model_id
+            GROUP BY
+                cm.id, cb.car_brand_name, cm.car_model_name
+
       `);
 
       // ดึงข้อมูลจาก route_total และข้อมูลที่เกี่ยวข้อง
       const [routeData] = await pool.query(`
-          SELECT 
-              rt.id AS route_total_id,
-              rt.data_price,
-              province.province_name,
-              route.route_name,
-              route_detail.route_detail_name,
-              car_model.car_model_name,
-              car_brand.car_brand_name,
-              car_images.car_images_file
-          FROM route_total rt
-          LEFT JOIN route_detail ON rt.route_detail_id = route_detail.id
-          LEFT JOIN route ON route_detail.route_id = route.id
-          LEFT JOIN province ON route.province_id = province.id
-          LEFT JOIN car_model ON rt.car_model_id = car_model.id
-          LEFT JOIN car_brand ON car_model.car_brand_id = car_brand.id
-          LEFT JOIN car_images ON car_model.id = car_images.car_model_id
+          SELECT
+                rt.id AS route_total_id,
+                rt.data_price,
+                province.province_name,
+                route.route_name,
+                route_detail.route_detail_name,
+                car_model.car_model_name,
+                car_brand.car_brand_name,
+                -- ใช้ GROUP_CONCAT เพื่อรวมรูปภาพหลายๆ รูปในคอลัมน์เดียว
+                GROUP_CONCAT(car_images.car_images_file ORDER BY car_images.car_images_file) AS car_images_files
+            FROM route_total rt
+            LEFT JOIN route_detail ON rt.route_detail_id = route_detail.id
+            LEFT JOIN route ON route_detail.route_id = route.id
+            LEFT JOIN province ON route.province_id = province.id
+            LEFT JOIN car_model ON rt.car_model_id = car_model.id
+            LEFT JOIN car_brand ON car_model.car_brand_id = car_brand.id
+            LEFT JOIN car_images ON car_model.id = car_images.car_model_id
+            GROUP BY rt.id, rt.data_price, province.province_name, route.route_name, route_detail.route_detail_name, car_model.car_model_name, car_brand.car_brand_name;
+
       `);
 
       // ส่งข้อมูลให้กับ client
@@ -65,6 +70,19 @@ export async function POST(req) {
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });
         }
 
+        // ตรวจสอบว่า car_model_id นี้มีอยู่ใน route_detail_id เดียวกันแล้วหรือยัง
+        const [existingRecord] = await pool.query(`
+            SELECT 1
+            FROM route_total
+            WHERE route_detail_id = ? AND car_model_id = ?
+            LIMIT 1
+        `, [route_detail_id, car_model_id]);
+
+        if (existingRecord.length > 0) {
+            // ถ้ามีข้อมูลที่ซ้ำกัน
+            return NextResponse.json({ error: "This car model is already assigned to this route." }, { status: 400 });
+        }
+
         // Insert ข้อมูลลงใน route_total
         const [result] = await pool.query(`
             INSERT INTO route_total (route_detail_id, car_model_id, data_price)
@@ -78,3 +96,4 @@ export async function POST(req) {
         return NextResponse.json({ error: "Failed to insert data" }, { status: 500 });
     }
 }
+
