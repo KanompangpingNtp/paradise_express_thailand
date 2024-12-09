@@ -1,10 +1,45 @@
-// Navbar.js
 "use client";
 import React from "react";
+import Swal from "sweetalert2";
 import { Bars3Icon, BellIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 // Navbar Component
 const Navbar = ({ setIsSidebarOpen }) => {
+  const handleLogout = async () => {
+    // แสดง SweetAlert2 ยืนยันการ Logout
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to log out?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, log out",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/login", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          // แสดงข้อความสำเร็จและ Redirect ไปหน้า Login
+          await Swal.fire("Logged Out", data.message, "success");
+          window.location.href = "/pages/home"; // Redirect ไปที่หน้า Login
+        } else {
+          await Swal.fire("Error", data.message || "Logout failed", "error");
+        }
+      } catch (error) {
+        console.error("Logout error:", error);
+        await Swal.fire("Error", "An unexpected error occurred.", "error");
+      }
+    }
+  };
+
   return (
     <nav className="bg-white/70 backdrop-blur-xl shadow-sm p-4 flex justify-between items-center border-b border-sky-100/50">
       <button
@@ -28,7 +63,10 @@ const Navbar = ({ setIsSidebarOpen }) => {
           <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-ping"></span>
         </button>
         <div className="h-6 border-r border-sky-200 mx-2"></div>
-        <div className="flex items-center space-x-3">
+        <div
+          className="flex items-center space-x-3 cursor-pointer"
+          onClick={handleLogout} // เรียกใช้ฟังก์ชัน handleLogout เมื่อคลิก
+        >
           <img
             src="https://preview.redd.it/s2-spoilers-do-you-think-jinx-cut-her-own-hair-or-do-you-v0-dlgn692vihpd1.jpeg?auto=webp&s=a17129cebee69242aec74ac93a3bb4f39247e399"
             alt="Profile"
@@ -47,3 +85,4 @@ const Navbar = ({ setIsSidebarOpen }) => {
 };
 
 export default Navbar;
+

@@ -46,7 +46,7 @@ const Navbar = () => {
     { href: "/pages/allTransfer", label: "Transfer", icon: TruckIcon },
     { href: "/pages/customized", label: "Customized", icon: SwatchIcon },
     { href: "/pages/contact", label: "Contact", icon: PhoneIcon },
-    { href: "/", label: "Login", icon: UserIcon },
+    { href: "/pages/login", label: "Login", icon: UserIcon },
   ];
 
   const styles = {
@@ -122,7 +122,7 @@ const Navbar = () => {
           {/* Login ขวาสุด */}
           <div className={styles.loginLink}>
             <Link
-              href="/"
+              href="/pages/login"
               className={`${styles.link} ${styles.linkHover} flex items-center`}
             >
               <UserIcon className="w-5 h-5 mr-2" />
@@ -159,7 +159,7 @@ const Navbar = () => {
               <li className="flex items-center gap-2 px-4 py-2 hover:bg-gray-900">
                 <HomeIcon className="w-5 h-5 text-gray-200" />
                 <Link
-                  href="/"
+                  href="/pages/login"
                   className="text-gray-200 hover:text-orange-400 duration-300 flex-grow"
                 >
                   Home
