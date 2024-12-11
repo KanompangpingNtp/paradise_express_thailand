@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true, // ใช้ app directory (ถ้าคุณใช้ App Router)
-  },
   reactStrictMode: true, // เปิด react strict mode
-  swcMinify: true, // เปิดการใช้ SWC minify สำหรับการลดขนาดไฟล์
+  experimental: {
+    // ลบ appDir หากไม่ได้ใช้ App Router
+    appDir: false, 
+  },
 };
 
 export default nextConfig;
