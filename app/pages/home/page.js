@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Herovideo from "./components/hero-video";
 import Animtion from "./components/animtion-section-two";
@@ -40,13 +40,16 @@ const Home = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <LoadingFornt/>
+        <LoadingFornt />
       </div>
     );
   }
 
-  // กรองข้อมูล tours ตาม section_name
-  const tourBySection = tours.reduce((acc, tour) => {
+  // กรองข้อมูล tours ให้มีค่า valid ก่อน
+  const validTours = tours.filter(tour => tour && tour.section_name);
+
+  // กรองข้อมูลโดยใช้ reduce เพื่อจัดกลุ่ม tours ตาม section_name
+  const tourBySection = validTours.reduce((acc, tour) => {
     if (!acc[tour.section_name]) {
       acc[tour.section_name] = [];
     }
@@ -80,17 +83,17 @@ const Home = () => {
       >
         <div className="flex flex-col justify-center items-center pt-20">
           <div className="container mx-auto text-white">
-            {Object.keys(tourBySection).map(
-              (sectionName, index) =>
-                sectionName !== "Tour Asia" && (
+            {Object.keys(tourBySection).map((sectionName, index) => {
+              const sectionTours = tourBySection[sectionName];
+              if (sectionName !== "Tour Asia" && sectionTours && sectionTours.length > 0) {
+                return (
                   <div key={index}>
-                    <TourAll
-                      sectionName={sectionName}
-                      tours={tourBySection[sectionName]}
-                    />
+                    <TourAll sectionName={sectionName} tours={sectionTours} />
                   </div>
-                )
-            )}
+                );
+              }
+              return null; // ถ้าไม่มีข้อมูลใน section นั้น ๆ ก็ไม่แสดงอะไร
+            })}
           </div>
         </div>
       </section>
@@ -98,11 +101,11 @@ const Home = () => {
       {/* Asia Tour Section */}
       <section>
         <div className="block container mx-auto bg-white sm:hidden shadow-inner shadow-black">
-          <TourAll sectionName="TourAsia" tours={tourAsiaData} />
+          {tourAsiaData.length > 0 && <TourAll sectionName="TourAsia" tours={tourAsiaData} />}
         </div>
 
         <div className="hidden sm:block">
-          <TourAsia sectionName="Tour Asia" tours={tourAsiaData} />
+          {tourAsiaData.length > 0 && <TourAsia sectionName="Tour Asia" tours={tourAsiaData} />}
         </div>
       </section>
 

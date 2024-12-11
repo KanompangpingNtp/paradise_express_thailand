@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Top from "@/app/components/top";
 import Image from "next/image";
 import InputField from "@/app/components/InputField";
@@ -18,7 +18,7 @@ import {
   EnvelopeOpenIcon,
 } from "@heroicons/react/24/outline";
 
-const DetailTour = () => {
+const DetailTourContent = () => {
   const searchParams = useSearchParams();
   const [card, setCard] = useState(null);
   const [adults, setAdults] = useState(0);
@@ -123,7 +123,9 @@ const DetailTour = () => {
         throw new Error("Failed to send email");
       }
 
-      setFeedbackMessage("Your booking has been confirmed. Please await further contact.");
+      setFeedbackMessage(
+        "Your booking has been confirmed. Please await further contact."
+      );
       setMessageType("success");
     } catch (error) {
       setFeedbackMessage(`Failed to send. Please contact support for assistance.
@@ -137,7 +139,7 @@ const DetailTour = () => {
   };
 
   if (!card) {
-    return <LoadingFornt/>;
+    return <LoadingFornt />;
   }
 
   return (
@@ -288,6 +290,14 @@ const DetailTour = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const DetailTour = () => {
+  return (
+    <Suspense fallback={<LoadingFornt />}>
+      <DetailTourContent />
+    </Suspense>
   );
 };
 

@@ -35,9 +35,10 @@ function Page() {
       const response = await fetch("/api/route/route_total");
       const data = await response.json();
       if (response.ok) {
-        setOptions(data.routesDetail || []);
-        setCarBrands(data.carBrandsData || []);
-        setData(data.routeData || []);
+        // ตรวจสอบว่ามีข้อมูลหรือไม่
+        setOptions(data.routesDetail || []); // ใช้ [] ถ้าไม่มีข้อมูล
+        setCarBrands(data.carBrandsData || []); // ใช้ [] ถ้าไม่มีข้อมูล
+        setData(data.routeData || []); // ใช้ [] ถ้าไม่มีข้อมูล
       } else {
         throw new Error("Failed to fetch data");
       }
@@ -54,11 +55,10 @@ function Page() {
     }
   };
 
+
   useEffect(() => {
     fetchData();
   }, []);
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,7 +158,6 @@ function Page() {
     fetchData(); // เรียก fetchData เพื่ออัปเดตข้อมูล
   };
 
-
   // ฟังก์ชันกรองข้อมูลตามคำค้นหา
   const filteredData = data.filter((item) => {
     const searchLower = searchTerm.toLowerCase();
@@ -170,7 +169,7 @@ function Page() {
       item.car_model_name.toLowerCase().includes(searchLower)
     );
   });
-  console.log(filteredData)
+  console.log(filteredData);
   return (
     <div>
       {loading ? (
@@ -220,10 +219,12 @@ function Page() {
                 <Select2Component
                   id="my-select"
                   label="Select Route"
-                  options={options.map((option) => ({
-                    id: option.route_detail_id,
-                    name: `${option.province_name} - ${option.route_name} - ${option.route_detail_name}`,
-                  }))}
+                  options={
+                    options?.map((option) => ({
+                      id: option.route_detail_id,
+                      name: `${option.province_name} - ${option.route_name} - ${option.route_detail_name}`,
+                    })) || []
+                  } // ใช้ [] ถ้า options เป็น undefined หรือ null
                   onSelect={setSelectedRoute}
                   loading={loading}
                 />
@@ -231,10 +232,12 @@ function Page() {
                 <Select2Component
                   id="car-brands-select"
                   label="Select Car Brand"
-                  options={carBrands.map((brand) => ({
-                    id: brand.car_model_id,
-                    name: `${brand.car_brand_name} - ${brand.car_model_name}`,
-                  }))}
+                  options={
+                    carBrands?.map((brand) => ({
+                      id: brand.car_model_id,
+                      name: `${brand.car_brand_name} - ${brand.car_model_name}`,
+                    })) || []
+                  } // ใช้ [] ถ้า carBrands เป็น undefined หรือ null
                   onSelect={setSelectedCarBrand}
                   loading={loading}
                 />

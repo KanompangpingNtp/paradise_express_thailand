@@ -1,21 +1,35 @@
 // Select2Component.js
+'use client'; // เพิ่ม 'use client' เพื่อให้โค้ดทำงานเฉพาะใน client-side
+
 import React, { useEffect } from "react";
 import $ from "jquery";
-import "select2/dist/css/select2.css";
-import "select2";
+import "select2/dist/css/select2.min.css";
+
+// ใช้ dynamic import เพื่อโหลด select2 เฉพาะใน client-side
+const loadSelect2 = () => import("select2");
 
 const Select2Component = ({ id, label, options, onSelect, loading }) => {
   useEffect(() => {
-    // Initialize Select2
-    $(`#${id}`).select2();
+    const initializeSelect2 = async () => {
+      // โหลด select2 เฉพาะใน client-side
+      await loadSelect2();
 
-    // Handle select event
-    $(`#${id}`).on("select2:select", function (e) {
-      const selectedData = e.params.data;
-      onSelect(selectedData.id);
-    });
+      // ตรวจสอบว่า DOM ถูกโหลดและสามารถใช้ select2 ได้
+      if (typeof window !== "undefined") {
+        // Initialize Select2
+        $(`#${id}`).select2();
 
-    // Destroy Select2 on component unmount
+        // Handle select event
+        $(`#${id}`).on("select2:select", function (e) {
+          const selectedData = e.params.data;
+          onSelect(selectedData.id);
+        });
+      }
+    };
+
+    initializeSelect2();
+
+    // ทำการ destroy เมื่อ component unmount
     return () => {
       if ($(`#${id}`).hasClass("select2-hidden-accessible")) {
         $(`#${id}`).select2("destroy");
@@ -48,5 +62,4 @@ const Select2Component = ({ id, label, options, onSelect, loading }) => {
   );
 };
 
-// ตรวจสอบให้แน่ใจว่า export default ได้ทำการ export คอมโพเนนต์
 export default Select2Component;

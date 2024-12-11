@@ -1,6 +1,7 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState,  Suspense } from "react";
 import Top from "@/app/components/top";
 import Image from "next/image";
 import InputField from "@/app/components/InputField";
@@ -18,7 +19,7 @@ import {
   EnvelopeOpenIcon,
 } from "@heroicons/react/24/outline";
 
-const DetailCar = () => {
+const DetailCarContent = () => {
   const searchParams = useSearchParams();
   const [car, setCar] = useState(null);  // เปลี่ยนจาก "card" เป็น "car"
   const [adults, setAdults] = useState(0);
@@ -295,6 +296,14 @@ const DetailCar = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const DetailCar = () => {
+  return (
+    <Suspense fallback={<LoadingFornt />}>
+      <DetailCarContent />
+    </Suspense>
   );
 };
 

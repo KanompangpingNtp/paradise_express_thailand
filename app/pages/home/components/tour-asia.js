@@ -18,7 +18,8 @@ const TourAsia = ({ tours }) => {
   useEffect(() => {
     window.addEventListener("resize", handleResize); // ฟังการเปลี่ยนแปลงขนาดหน้าจอ
     return () => {
-      window.removeEventListener("resize", handleResize); // ลบ event listener เมื่อ component ถูกทำลาย
+      window.removeEventListener("resize", handleResize); // ลบ event listener เมื่อ component
+      ถูกทำลาย
     };
   }, []);
 
