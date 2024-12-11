@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true, // เปิด react strict mode
   experimental: {
     // ลบ appDir หากไม่ได้ใช้ App Router
-    appDir: false, 
+    // appDir: false, 
   },
 };
 
